@@ -2,8 +2,10 @@
 from typing import List, Tuple
 import logging
 import asyncio
+from pathlib import Path
 
 from .config import MWConfig
+from .jwt import PRIVDIR_MODE
 
 LOGGER = logging.getLogger(__name__)
 
@@ -48,3 +50,24 @@ async def call_certbot(config: MWConfig) -> Tuple[int, List[str]]:
     assert isinstance(process.returncode, int)  # at this point it is, keep mypy happy
 
     return process.returncode, args
+
+
+async def get_certs() -> Path:
+    """Get certs from LE, copy them to the configured path, return configured path"""
+    config = MWConfig.singleton()
+    retcode, _ = await call_certbot(config)
+    if retcode != 0:
+        raise RuntimeError("Certbot returned error")
+    copydir = config.le_copy_path / config.le_cert_name
+    copydir.mkdir(parents=True, exist_ok=True)
+    copydir.chmod(PRIVDIR_MODE)
+    for fpth in config.le_cert_dir.iterdir():
+        if not fpth.name.endswith(".pem"):
+            LOGGER.debug("Skipping {}".format(fpth))
+            continue
+        absfpth = fpth.resolve(strict=True)
+        LOGGER.debug("{} resolved to {}".format(fpth, absfpth))
+        tgtpth = copydir / fpth.name
+        tgtpth.write_bytes(absfpth.read_bytes())
+        LOGGER.info("Wrote {}".format(tgtpth))
+    return copydir

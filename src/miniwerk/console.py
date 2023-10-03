@@ -8,7 +8,7 @@ from libadvian.logging import init_logging
 
 from miniwerk import __version__
 from miniwerk.config import MWConfig
-from miniwerk.lewrap import call_certbot
+from miniwerk.lewrap import get_certs
 from miniwerk.manifests import create_rasenmaeher_manifest, create_fakeproduct_manifest
 
 LOGGER = logging.getLogger(__name__)
@@ -36,13 +36,13 @@ def dump_config() -> None:
 
 @cligrp.command(name="certs")
 @click.pass_context
-def get_certs(ctx: Any) -> None:
+def do_certs(ctx: Any) -> None:
     """Get and/or renew certs based on configuration"""
 
     async def call() -> int:
         """Do the call"""
-        retcode, _ = await call_certbot(MWConfig.singleton())
-        return retcode
+        await get_certs()
+        return 0
 
     ctx.exit(asyncio.get_event_loop().run_until_complete(call()))
 
@@ -70,8 +70,8 @@ def do_full_init(ctx: Any) -> None:
         """Do the call"""
         await create_rasenmaeher_manifest()
         await create_fakeproduct_manifest()
-        retcode, _ = await call_certbot(MWConfig.singleton())
-        return retcode
+        await get_certs()
+        return 0
 
     ctx.exit(asyncio.get_event_loop().run_until_complete(call()))
 
