@@ -22,23 +22,25 @@ def check_common_args(args: List[str], config: MWConfig) -> None:
     assert "rasenmaeher" in args
 
 
-def test_default_config() -> None:
+@pytest.mark.asyncio
+async def test_default_config() -> None:
     """Test with default config"""
     config = MWConfig()  # type: ignore[call-arg]
     LOGGER.debug("config={}".format(config))
     assert config.ci is True
-    args = call_certbot(config)
+    _, args = await call_certbot(config)
     check_common_args(args, config)
     assert "--staging" in args
 
 
-def test_live_config(monkeypatch: pytest.MonkeyPatch) -> None:
+@pytest.mark.asyncio
+async def test_live_config(monkeypatch: pytest.MonkeyPatch) -> None:
     """Test with modified config"""
     with monkeypatch.context() as mpatch:
         mpatch.setenv("MW_LE_TEST", "false")
         config = MWConfig()  # type: ignore[call-arg]
         LOGGER.debug("config={}".format(config))
         assert config.ci is True
-        args = call_certbot(config)
+        _, args = await call_certbot(config)
         check_common_args(args, config)
         assert "--staging" not in args

@@ -1,5 +1,7 @@
 """CLI entrypoints for miniwerk"""
+from typing import Any
 import logging
+import asyncio
 
 import click
 from libadvian.logging import init_logging
@@ -32,9 +34,16 @@ def dump_config() -> None:
 
 
 @cligrp.command(name="certs")
-def get_certs() -> None:
+@click.pass_context
+def get_certs(ctx: Any) -> None:
     """Get and/or renew certs based on configuration"""
-    call_certbot(MWConfig.singleton())
+
+    async def call() -> int:
+        """Do the call"""
+        retcode, _ = await call_certbot(MWConfig.singleton())
+        return retcode
+
+    ctx.exit(asyncio.get_event_loop().run_until_complete(call()))
 
 
 def miniwerk_cli() -> None:

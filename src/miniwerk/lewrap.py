@@ -1,15 +1,14 @@
 """Wrap letsencrypt"""
-from typing import List
+from typing import List, Tuple
 import logging
-
-from certbot.main import main as certbot_main
+import asyncio
 
 from .config import MWConfig
 
 LOGGER = logging.getLogger(__name__)
 
 
-def call_certbot(config: MWConfig) -> List[str]:
+async def call_certbot(config: MWConfig) -> Tuple[int, List[str]]:
     """Construct Certbot command and call the entrypoint, returns the args for easier unit testing"""
     args: List[str] = [
         "certonly",
@@ -35,10 +34,17 @@ def call_certbot(config: MWConfig) -> List[str]:
 
     if config.ci:
         LOGGER.info("Running under CI, not actually calling certbot")
-        return args
+        return 0, args
 
-    LOGGER.debug("Calling certbot_main({})".format(args))
-    # FIXME: This overrides root logger level to debug (whyyyy)
-    #        we probably are better off just launching a shell afterall
-    certbot_main(args)
-    return args
+    cmd = "certbot " + " ".join(args)
+    LOGGER.debug("Calling create_subprocess_shell(({})".format(cmd))
+    process = await asyncio.create_subprocess_shell(
+        cmd,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+    )
+    out = await asyncio.wait_for(process.communicate(), timeout=60)
+    LOGGER.info(out)
+    assert isinstance(process.returncode, int)  # at this point it is, keep mypy happy
+
+    return process.returncode, args
