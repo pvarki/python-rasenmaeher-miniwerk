@@ -32,6 +32,7 @@ async def create_rasenmaeher_manifest() -> Path:
         },
     }
     manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+    LOGGER.info("Wrote {}".format(manifest_path))
     return manifest_path
 
 
@@ -68,4 +69,5 @@ async def create_fakeproduct_manifest() -> Path:
         "product": {"dns": f"fake.{config.domain}"},
     }
     manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+    LOGGER.info("Wrote {}".format(manifest_path))
     return manifest_path

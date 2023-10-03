@@ -34,6 +34,7 @@ async def check_create_keypair() -> Tuple[Path, Path]:
     LOGGER.info("Generating keypair, this will take a moment")
     _, cpk = await asyncio.get_event_loop().run_in_executor(None, generate_keypair, privkeypath, None)
     pubkeypath.write_bytes(cpk.read_bytes())
+    LOGGER.info("Wrote {}".format(pubkeypath))
 
     return privkeypath, pubkeypath
 
