@@ -4,6 +4,7 @@ miniwerk
 
 Minimal KRAFTWERK amulation to be able to run a RASENMAEHER+products deployment on any VM
 
+There are some required ENV configs check out example_env.sh for them (.env file is also supported)
 
 Docker
 ------
@@ -36,7 +37,7 @@ Creating a development container
 Build image, create container and start it::
 
     docker build --ssh default --target devel_shell -t miniwerk:devel_shell .
-    docker create --name miniwerk_devel -v `pwd`":/app" -it `echo $DOCKER_SSHAGENT` miniwerk:devel_shell
+    docker create --name miniwerk_devel -v `pwd`":/app" -p 80:80 -it `echo $DOCKER_SSHAGENT` miniwerk:devel_shell
     docker start -i miniwerk_devel
 
 pre-commit considerations
@@ -67,7 +68,7 @@ Production docker
 There's a "production" target as well for running the application, remember to change that
 architecture tag to arm64 if building on ARM::
 
-    docker build --ssh default --target production -t miniwerk:latest .
+    docker build --ssh default --target production -t miniwerk:amd64-latest .
     docker run -it --name miniwerk miniwerk:amd64-latest
 
 Development

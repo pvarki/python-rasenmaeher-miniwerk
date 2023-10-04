@@ -1,8 +1,12 @@
 # IDE settings
 .idea
 
-# ci artefacts
+# testing artefacts
 pytest*.xml
+devdata
+
+# env definitions
+*env*.sh
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -47,7 +47,6 @@ RUN apt-get update && apt-get install -y \
         openssh-client \
         cargo \
         jq \
-        certbot \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/* \
     # githublab ssh
@@ -104,7 +103,6 @@ RUN --mount=type=ssh apt-get update && apt-get install -y \
         libffi7 \
         tini \
         jq \
-        certbot \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/* \
     && chmod a+x /docker-entrypoint.sh \
@@ -151,6 +149,7 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y zsh \
     && sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" \
     && echo "source /root/.profile" >>/root/.zshrc \
+    && echo 'export MW_DATA_PATH="/app/devdata"' >>/root/.profile \
     && pip3 install git-up \
     && true
 ENTRYPOINT ["/bin/zsh", "-l"]
