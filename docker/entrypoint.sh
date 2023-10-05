@@ -1,7 +1,7 @@
 #!/bin/bash -l
 set -e
 if [ "$#" -eq 0 ]; then
-  miniwerk init
+  miniwerk -vv init
 else
   exec "$@"
 fi
