@@ -45,9 +45,15 @@ async def call_certbot(config: MWConfig) -> Tuple[int, List[str]]:
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE,
     )
-    out = await asyncio.wait_for(process.communicate(), timeout=60)
+    out, err = await asyncio.wait_for(process.communicate(), timeout=60)
+    if err:
+        LOGGER.warning(err)
     LOGGER.info(out)
     assert isinstance(process.returncode, int)  # at this point it is, keep mypy happy
+    if process.returncode != 0:
+        LOGGER.error("{} returned nonzero code: {} (process: {})".format(cmd, process.returncode, process))
+        LOGGER.error(err)
+        LOGGER.error(out)
 
     return process.returncode, args
 
