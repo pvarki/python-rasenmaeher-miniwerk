@@ -13,15 +13,34 @@ from .jwt import get_issuer, PUBDIR_MODE, check_create_keypair
 LOGGER = logging.getLogger(__name__)
 
 
+async def copy_jwt_pub(manifest_dir: Path) -> None:
+    """Copy miniwerks JWT public key to the manifest dir"""
+    _, mw_jwt_pub = await check_create_keypair()
+    LOGGER.debug("manifest_dir={}".format(manifest_dir))
+    pubkeypath = manifest_dir / "publickeys" / "kraftwerk.pub"
+    pubdir = pubkeypath.parent
+    pubdir.mkdir(parents=True, exist_ok=True)
+    pubdir.chmod(PUBDIR_MODE)
+    LOGGER.debug("pubkeypath={}, exists: {}".format(pubkeypath, pubkeypath.exists()))
+    if pubkeypath.exists():
+        return
+    pubkeypath.write_bytes(mw_jwt_pub.read_bytes())
+    LOGGER.info("Wrote {}".format(pubkeypath))
+
+
 async def create_rasenmaeher_manifest() -> Path:
     """create manifest for RASENMAEHER"""
     config = MWConfig.singleton()
     manifest_path = config.manifests_base / "rasenmaeher" / "kraftwerk-rasenmaeher-init.json"
     manifest_dir = manifest_path.parent
     manifest_dir.mkdir(parents=True, exist_ok=True)
+    LOGGER.debug("manifest_dir={}".format(manifest_dir))
+    await copy_jwt_pub(manifest_dir)
+
     if manifest_path.exists():
         LOGGER.info("{} already exists, not overwriting".format(manifest_path))
         return manifest_path
+
     manifest = {
         "dns": config.domain,
         "products": cast(Dict[str, Dict[str, str]], {}),
@@ -48,13 +67,8 @@ async def create_product_manifest(productname: str) -> Path:
     manifest_path = config.manifests_base / productname / "kraftwerk-init.json"
     manifest_dir = manifest_path.parent
     manifest_dir.mkdir(parents=True, exist_ok=True)
-
-    _, mw_jwt_pub = await check_create_keypair()
-    pubkeypath = manifest_dir / "publickeys" / "kraftwerk.pub"
-    pubdir = pubkeypath.parent
-    pubdir.mkdir(parents=True, exist_ok=True)
-    pubdir.chmod(PUBDIR_MODE)
-    pubkeypath.write_bytes(mw_jwt_pub.read_bytes())
+    LOGGER.debug("manifest_dir={}".format(manifest_dir))
+    await copy_jwt_pub(manifest_dir)
 
     if manifest_path.exists():
         LOGGER.info("{} already exists, not overwriting".format(manifest_path))
