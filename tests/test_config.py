@@ -12,10 +12,19 @@ def test_defaults() -> None:
     LOGGER.debug("cfg={}".format(cfg))
     assert cfg.ci is True
     assert cfg.domain == "pytest.pvarki.fi"
-    assert cfg.subdomains == "fake,mtls"
+    assert cfg.subdomains == "mtls"
+    assert cfg.products == "fake,tak"
     assert str(cfg.data_path) != "/data/persistent"
     assert cfg.le_email == "example@example.com"
-    assert cfg.fqdns == ["fake.pytest.pvarki.fi", "mtls.pytest.pvarki.fi", "pytest.pvarki.fi"]
+    LOGGER.debug("cfg.fqdns={}".format(cfg.fqdns))
+    assert set(cfg.fqdns) == {
+        "mtls.tak.pytest.pvarki.fi",
+        "tak.pytest.pvarki.fi",
+        "mtls.fake.pytest.pvarki.fi",
+        "fake.pytest.pvarki.fi",
+        "mtls.pytest.pvarki.fi",
+        "pytest.pvarki.fi",
+    }
 
 
 def test_singleton() -> None:
