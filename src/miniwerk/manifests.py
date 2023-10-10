@@ -8,7 +8,7 @@ from pathlib import Path
 from libadvian.binpackers import uuid_to_b64
 
 from .config import MWConfig, ProductSettings
-from .jwt import get_issuer
+from .jwt import get_issuer, PUBDIR_MODE, check_create_keypair
 
 LOGGER = logging.getLogger(__name__)
 
@@ -48,6 +48,14 @@ async def create_product_manifest(productname: str) -> Path:
     manifest_path = config.manifests_base / productname / "kraftwerk-init.json"
     manifest_dir = manifest_path.parent
     manifest_dir.mkdir(parents=True, exist_ok=True)
+
+    _, mw_jwt_pub = await check_create_keypair()
+    pubkeypath = manifest_dir / "publickeys" / "kraftwerk.pub"
+    pubdir = pubkeypath.parent
+    pubdir.mkdir(parents=True, exist_ok=True)
+    pubdir.chmod(PUBDIR_MODE)
+    pubkeypath.write_bytes(mw_jwt_pub.read_bytes())
+
     if manifest_path.exists():
         LOGGER.info("{} already exists, not overwriting".format(manifest_path))
         return manifest_path

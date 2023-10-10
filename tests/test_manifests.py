@@ -30,6 +30,8 @@ async def test_fakeproduct_manifest() -> None:
     """Check fakeproduct manifest"""
     config = MWConfig.singleton()
     pth = [cand for cand in await create_all_product_manifests() if "/fake/" in str(cand)][0]
+    pubkeypth = pth.parent / "publickeys" / "kraftwerk.pub"
+    assert pubkeypth.exists()
     manifest = json.loads(pth.read_text(encoding="utf-8"))
     LOGGER.debug("manifest={}".format(manifest))
     verifier = await get_verifier()

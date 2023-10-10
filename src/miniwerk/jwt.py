@@ -23,7 +23,7 @@ async def check_create_keypair() -> Tuple[Path, Path]:
     privdir = privkeypath.parent
     privdir.mkdir(parents=True, exist_ok=True)
     privdir.chmod(PRIVDIR_MODE)
-    pubkeypath = config.manifests_base / "publickeys" / "kraftwerk.pub"
+    pubkeypath = config.data_path / "publickeys" / "kraftwerk.pub"
     pubdir = pubkeypath.parent
     pubdir.mkdir(parents=True, exist_ok=True)
     pubdir.chmod(PUBDIR_MODE)
