@@ -43,7 +43,7 @@ class MWConfig(BaseSettings):
 
     mkcert: bool = Field(default=False, description="Use mkcert instead of certbot")
     ci: bool = Field(default=False, alias="CI", description="Are we running in CI")
-    model_config = SettingsConfigDict(env_prefix="mw_", env_file=".env", extra="ignore")
+    model_config = SettingsConfigDict(env_prefix="mw_", env_file=".env", extra="ignore", env_nested_delimiter="__")
     _singleton: ClassVar[Optional[MWConfig]] = None
 
     @classmethod
