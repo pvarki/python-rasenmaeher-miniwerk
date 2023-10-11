@@ -1,14 +1,21 @@
 """Test manifest creation"""
 import logging
 import json
+from pathlib import Path
 
 import pytest
 
 from miniwerk.config import MWConfig
 from miniwerk.jwt import get_verifier
-from miniwerk.manifests import create_fakeproduct_manifest, create_rasenmaeher_manifest
+from miniwerk.manifests import create_all_product_manifests, create_rasenmaeher_manifest
 
 LOGGER = logging.getLogger(__name__)
+
+
+def check_jwt_pubkey(pth: Path) -> None:
+    """Check JWT pubkey has been copied"""
+    pubkeypth = pth.parent / "publickeys" / "kraftwerk.pub"
+    assert pubkeypth.exists()
 
 
 @pytest.mark.asyncio
@@ -16,16 +23,22 @@ async def test_rm_manifest() -> None:
     """Check RASENMAEHER manifest creation"""
     config = MWConfig.singleton()
     pth = await create_rasenmaeher_manifest()
+    check_jwt_pubkey(pth)
     manifest = json.loads(pth.read_text(encoding="utf-8"))
     LOGGER.debug("manifest={}".format(manifest))
     assert manifest["dns"] == config.domain
+    assert "fake" in manifest["products"]
+    assert "tak" in manifest["products"]
+    assert "certcn" in manifest["products"]["tak"]
+    assert manifest["products"]["tak"]["certcn"] == "tak.pytest.pvarki.fi"
 
 
 @pytest.mark.asyncio
 async def test_fakeproduct_manifest() -> None:
     """Check fakeproduct manifest"""
     config = MWConfig.singleton()
-    pth = await create_fakeproduct_manifest()
+    pth = [cand for cand in await create_all_product_manifests() if "/fake/" in str(cand)][0]
+    check_jwt_pubkey(pth)
     manifest = json.loads(pth.read_text(encoding="utf-8"))
     LOGGER.debug("manifest={}".format(manifest))
     verifier = await get_verifier()

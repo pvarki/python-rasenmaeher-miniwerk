@@ -8,8 +8,9 @@ from libadvian.logging import init_logging
 
 from miniwerk import __version__
 from miniwerk.config import MWConfig
-from miniwerk.lewrap import get_certs
-from miniwerk.manifests import create_rasenmaeher_manifest, create_fakeproduct_manifest
+from miniwerk.lewrap import get_le_certs
+from miniwerk.mkcwrap import get_mk_certs
+from miniwerk.manifests import create_rasenmaeher_manifest, create_all_product_manifests
 
 LOGGER = logging.getLogger(__name__)
 
@@ -41,7 +42,11 @@ def do_certs(ctx: Any) -> None:
 
     async def call() -> int:
         """Do the call"""
-        await get_certs()
+        config = MWConfig.singleton()
+        if config.mkcert:
+            await get_mk_certs()
+        else:
+            await get_le_certs()
         return 0
 
     ctx.exit(asyncio.get_event_loop().run_until_complete(call()))
@@ -55,7 +60,7 @@ def create_manifests(ctx: Any) -> None:
     async def call() -> int:
         """Do the call"""
         await create_rasenmaeher_manifest()
-        await create_fakeproduct_manifest()
+        await create_all_product_manifests()
         return 0
 
     ctx.exit(asyncio.get_event_loop().run_until_complete(call()))
@@ -68,9 +73,13 @@ def do_full_init(ctx: Any) -> None:
 
     async def call() -> int:
         """Do the call"""
+        config = MWConfig.singleton()
         await create_rasenmaeher_manifest()
-        await create_fakeproduct_manifest()
-        await get_certs()
+        await create_all_product_manifests()
+        if config.mkcert:
+            await get_mk_certs()
+        else:
+            await get_le_certs()
         return 0
 
     ctx.exit(asyncio.get_event_loop().run_until_complete(call()))

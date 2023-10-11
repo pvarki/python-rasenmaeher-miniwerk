@@ -12,6 +12,7 @@ RUN export RESOLVED_VERSIONS=`pyenv_resolve $PYTHON_VERSIONS` \
     && poetry self update $POETRY_VERSION || pip install -U poetry==$POETRY_VERSION \
     && pip install -U tox \
     && apt-get update && apt-get install -y \
+        mkcert \
         git \
     && rm -rf /var/lib/apt/lists/* \
     && true
@@ -47,6 +48,7 @@ RUN apt-get update && apt-get install -y \
         openssh-client \
         cargo \
         jq \
+        mkcert \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/* \
     # githublab ssh
@@ -100,9 +102,10 @@ WORKDIR /app
 # and install the wheels we built in the previous step. generate default config
 RUN --mount=type=ssh apt-get update && apt-get install -y \
         bash \
-        libffi7 \
+        libffi8 \
         tini \
         jq \
+        mkcert \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/* \
     && chmod a+x /docker-entrypoint.sh \
@@ -150,6 +153,7 @@ RUN apt-get update && apt-get install -y zsh \
     && sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" \
     && echo "source /root/.profile" >>/root/.zshrc \
     && echo 'export MW_DATA_PATH="/app/devdata"' >>/root/.profile \
+    && echo 'export CAROOT="/app/devdata/mkcert"' >>/root/.profile \
     && pip3 install git-up \
     && true
 ENTRYPOINT ["/bin/zsh", "-l"]
