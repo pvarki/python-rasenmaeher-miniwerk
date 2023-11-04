@@ -2,9 +2,17 @@
 from __future__ import annotations
 from typing import ClassVar, Optional, List, Dict
 from pathlib import Path
+from enum import StrEnum
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class KeyType(StrEnum):
+    """Valid key types for certbot/mkcert"""
+
+    RSA = "rsa"
+    ECDSA = "ecdsa"
 
 
 class ProductSettings(BaseSettings):
@@ -43,6 +51,7 @@ class MWConfig(BaseSettings):
 
     mkcert: bool = Field(default=False, description="Use mkcert instead of certbot")
     ci: bool = Field(default=False, alias="CI", description="Are we running in CI")
+    keytype: KeyType = Field(default="ecdsa", description="Which key types to use, rsa or ecdsa (default)")
     model_config = SettingsConfigDict(env_prefix="mw_", env_file=".env", extra="ignore", env_nested_delimiter="__")
     _singleton: ClassVar[Optional[MWConfig]] = None
 
