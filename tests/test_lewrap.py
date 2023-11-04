@@ -31,6 +31,23 @@ async def test_default_config() -> None:
     _, args = await call_certbot(config)
     check_common_args(args, config)
     assert "--staging" in args
+    assert "--key-type" in args
+    assert "ecdsa" in args
+
+
+@pytest.mark.asyncio
+async def test_rsa_config(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test with modified config"""
+    with monkeypatch.context() as mpatch:
+        mpatch.setenv("MW_KEYTYPE", "rsa")
+        config = MWConfig()  # type: ignore[call-arg]
+        LOGGER.debug("config={}".format(config))
+        assert config.ci is True
+        _, args = await call_certbot(config)
+        check_common_args(args, config)
+        assert "--staging" in args
+        assert "--key-type" in args
+        assert "rsa" in args
 
 
 @pytest.mark.asyncio

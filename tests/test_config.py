@@ -30,7 +30,6 @@ def test_defaults() -> None:
     assert cfg.keytype is KeyType.ECDSA
 
 
-
 def test_singleton() -> None:
     """Test the singleton fetcher"""
     assert MWConfig._singleton is None  # pylint: disable=W0212

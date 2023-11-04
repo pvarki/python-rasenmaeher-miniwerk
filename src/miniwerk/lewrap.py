@@ -13,6 +13,8 @@ async def call_certbot(config: MWConfig) -> Tuple[int, List[str]]:
     """Construct Certbot command and call the entrypoint, returns the args for easier unit testing"""
     args: List[str] = [
         "certonly",
+        "--key-type",
+        config.keytype.value,
         "--non-interactive",
         "--standalone",
         "--expand",

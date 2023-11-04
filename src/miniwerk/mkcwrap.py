@@ -3,7 +3,7 @@ from typing import List, Tuple
 import logging
 from pathlib import Path
 
-from .config import MWConfig
+from .config import MWConfig, KeyType
 from .helpers import certs_copy, call_cmd, mkcert_ca_cert
 from .jwt import PRIVDIR_MODE
 
@@ -19,8 +19,14 @@ async def call_mkcert(config: MWConfig) -> Tuple[int, List[str]]:
         str(config.mk_cert_dir / "cert.pem"),
         "--key-file",
         str(config.mk_cert_dir / "privkey.pem"),
-        " ".join(config.fqdns),
     ]
+    if config.keytype == KeyType.ECDSA:
+        args.append("--ecdsa")
+    args.append(" ".join(config.fqdns))
+
+    if config.ci:
+        LOGGER.info("Running under CI, not actually calling mkcert")
+        return 0, args
 
     cmd = "mkcert " + " ".join(args)
     retcode = await call_cmd(cmd)
