@@ -43,6 +43,7 @@ async def create_rasenmaeher_manifest() -> Path:
 
     manifest = {
         "dns": config.domain,
+        "deployment": config.domain.split(".")[0],
         "products": cast(Dict[str, Dict[str, str]], {}),
     }
     for productname in config.product_manifest_paths.keys():
@@ -90,9 +91,11 @@ async def create_product_manifest(productname: str) -> Path:
         rm_uri = f"https://{config.domain}/"
     mtls_uri = rm_uri.replace("https://", "https://mtls.")
     manifest = {
+        "deployment": config.domain.split(".")[0],
         "rasenmaeher": {
             "init": {"base_uri": rm_uri, "csr_jwt": token},
             "mtls": {"base_uri": mtls_uri},
+            "certcn": "rasenmaeher",
         },
         "product": {"dns": f"{productname}.{config.domain}"},
     }
