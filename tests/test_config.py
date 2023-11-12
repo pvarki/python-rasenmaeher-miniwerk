@@ -3,7 +3,7 @@ import logging
 
 import pytest
 
-from miniwerk.config import MWConfig
+from miniwerk.config import MWConfig, KeyType
 
 LOGGER = logging.getLogger(__name__)
 
@@ -27,6 +27,7 @@ def test_defaults() -> None:
         "mtls.pytest.pvarki.fi",
         "pytest.pvarki.fi",
     }
+    assert cfg.keytype is KeyType.ECDSA
 
 
 def test_singleton() -> None:
@@ -45,6 +46,8 @@ def test_sub_config_env(monkeypatch: pytest.MonkeyPatch) -> None:
     """Test with modified config of product settings via env"""
     with monkeypatch.context() as mpatch:
         mpatch.setenv("MW_RASENMAEHER__API_PORT", "4439")
+        mpatch.setenv("MW_KEYTYPE", "rsa")
         cfg = MWConfig()  # type: ignore[call-arg]
         LOGGER.debug("cfg={}".format(cfg))
         assert cfg.rasenmaeher.api_port == 4439  # pylint: disable=E1101  # false positive
+        assert cfg.keytype is KeyType.RSA
