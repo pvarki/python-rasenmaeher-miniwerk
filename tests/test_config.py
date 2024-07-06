@@ -24,6 +24,8 @@ def test_defaults() -> None:
         "tak.pytest.pvarki.fi",
         "mtls.fake.pytest.pvarki.fi",
         "fake.pytest.pvarki.fi",
+        "mtls.kc.pytest.pvarki.fi",
+        "kc.pytest.pvarki.fi",
         "mtls.pytest.pvarki.fi",
         "pytest.pvarki.fi",
     }
@@ -51,3 +53,9 @@ def test_sub_config_env(monkeypatch: pytest.MonkeyPatch) -> None:
         LOGGER.debug("cfg={}".format(cfg))
         assert cfg.rasenmaeher.api_port == 4439  # pylint: disable=E1101  # false positive
         assert cfg.keytype is KeyType.RSA
+
+
+def test_kc_in_fqdns() -> None:
+    """Test the singleton fetcher"""
+    cfg = MWConfig.singleton()
+    assert f"kc.{cfg.domain}" in cfg.fqdns

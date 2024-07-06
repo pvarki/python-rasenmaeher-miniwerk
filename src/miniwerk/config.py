@@ -91,7 +91,7 @@ class MWConfig(BaseSettings):
     def fqdns(self) -> List[str]:
         """Main domain and all subdomains and FQDNs"""
         ret = [f"{subd.strip()}.{self.domain}" for subd in str(self.subdomains).split(",")]
-        for proddomain in [f"{prod.strip()}.{self.domain}" for prod in str(self.products).split(",")]:
+        for proddomain in [f"{prod.strip()}.{self.domain}" for prod in (str(self.products).split(",") + ["kc"])]:
             ret.append(proddomain)
             ret += [f"{subd.strip()}.{proddomain}" for subd in str(self.subdomains).split(",")]
         ret.append(self.domain)
