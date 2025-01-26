@@ -19,6 +19,9 @@ class ProductSettings(BaseSettings):
     """Configs for each product"""
 
     api_port: int = Field(description="port for the API")
+    user_port: int = Field(description="port for the normal users")
+    api_base: str = Field(description="base url for the API", default="/")
+    user_base: str = Field(description="base url for normal users", default="/")
 
 
 class MWConfig(BaseSettings):
@@ -30,16 +33,22 @@ class MWConfig(BaseSettings):
     le_test: bool = Field(default=True, description="Use LE staging/test env")
     subdomains: str = Field(default="mtls", description="Comma separated list of extra subdomains to get certs for")
     products: str = Field(
-        default="fake,tak", description="Comma separated list of products to create manifests and get subdomains for"
+        default="fake,tak,bl", description="Comma separated list of products to create manifests and get subdomains for"
     )
     fake: ProductSettings = Field(
-        description="Setting for fakeproduct intration API", default_factory=lambda: ProductSettings(api_port=4625)
+        description="Setting for fakeproduct intration API",
+        default_factory=lambda: ProductSettings(api_port=4625, user_port=4625),
     )
     tak: ProductSettings = Field(
-        description="Setting for TAK intration API", default_factory=lambda: ProductSettings(api_port=4626)
+        description="Setting for TAK intration API",
+        default_factory=lambda: ProductSettings(api_port=4626, user_port=8443),
     )
     rasenmaeher: ProductSettings = Field(
-        description="Setting for RASENMAEHER API", default_factory=lambda: ProductSettings(api_port=443)
+        description="Setting for RASENMAEHER API", default_factory=lambda: ProductSettings(api_port=443, user_port=443)
+    )
+    bl: ProductSettings = Field(
+        description="Setting for BattleLog intration API",
+        default_factory=lambda: ProductSettings(api_port=4627, user_port=4627, api_base="/rmapi/"),
     )
 
     le_cert_name: str = Field(default="rasenmaeher", description="--cert-name for LE, used to determine directory name")
