@@ -53,8 +53,8 @@ async def create_rasenmaeher_manifest() -> Path:
             continue
         product_config = cast(ProductSettings, product_config)
         manifest["products"][productname] = {  # type: ignore[index]   # false positive
-            "api": f"https://{productname}.{config.domain}:{product_config.api_port}/",
-            "uri": f"https://{productname}.{config.domain}:5443/notthere",  # Not actually there
+            "api": f"https://{productname}.{config.domain}:{product_config.api_port}{product_config.api_base}",
+            "uri": f"https://{productname}.{config.domain}:{product_config.user_port}{product_config.user_base}",
             "certcn": f"{productname}.{config.domain}",
         }
     manifest_path.write_text(json.dumps(manifest), encoding="utf-8")

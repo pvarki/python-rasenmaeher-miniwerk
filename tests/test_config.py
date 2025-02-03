@@ -15,7 +15,7 @@ def test_defaults() -> None:
     assert cfg.ci is True
     assert cfg.domain == "pytest.pvarki.fi"
     assert cfg.subdomains == "mtls"
-    assert cfg.products == "fake,tak"
+    assert cfg.products == "fake,tak,bl"
     assert str(cfg.data_path) != "/data/persistent"
     assert cfg.le_email == "example@example.com"
     LOGGER.debug("cfg.fqdns={}".format(cfg.fqdns))
@@ -24,8 +24,12 @@ def test_defaults() -> None:
         "tak.pytest.pvarki.fi",
         "mtls.fake.pytest.pvarki.fi",
         "fake.pytest.pvarki.fi",
+        "mtls.kc.pytest.pvarki.fi",
+        "kc.pytest.pvarki.fi",
         "mtls.pytest.pvarki.fi",
         "pytest.pvarki.fi",
+        "mtls.bl.pytest.pvarki.fi",
+        "bl.pytest.pvarki.fi",
     }
     assert cfg.keytype is KeyType.ECDSA
 
@@ -46,8 +50,15 @@ def test_sub_config_env(monkeypatch: pytest.MonkeyPatch) -> None:
     """Test with modified config of product settings via env"""
     with monkeypatch.context() as mpatch:
         mpatch.setenv("MW_RASENMAEHER__API_PORT", "4439")
+        mpatch.setenv("MW_RASENMAEHER__USER_PORT", "4439")
         mpatch.setenv("MW_KEYTYPE", "rsa")
         cfg = MWConfig()  # type: ignore[call-arg]
         LOGGER.debug("cfg={}".format(cfg))
         assert cfg.rasenmaeher.api_port == 4439  # pylint: disable=E1101  # false positive
         assert cfg.keytype is KeyType.RSA
+
+
+def test_kc_in_fqdns() -> None:
+    """Test the singleton fetcher"""
+    cfg = MWConfig.singleton()
+    assert f"kc.{cfg.domain}" in cfg.fqdns
