@@ -23,6 +23,8 @@ class ProductSettings(BaseSettings):
     api_base: str = Field(description="base url for the API", default="/")
     user_base: str = Field(description="base url for normal users", default="/")
 
+    model_config = SettingsConfigDict(extra="ignore")
+
 
 class MWConfig(BaseSettings):
     """Config for MiniWerk"""
