@@ -2,7 +2,7 @@
 #############################################
 # Tox testsuite for multiple python version #
 #############################################
-FROM advian/tox-base:debian-bookworm as tox
+FROM advian/tox-base:debian-bookworm AS tox
 ARG PYTHON_VERSIONS="3.11"
 ARG POETRY_VERSION="1.5.1"
 RUN export RESOLVED_VERSIONS=`pyenv_resolve $PYTHON_VERSIONS` \
@@ -20,7 +20,7 @@ RUN export RESOLVED_VERSIONS=`pyenv_resolve $PYTHON_VERSIONS` \
 ######################
 # Base builder image #
 ######################
-FROM python:3.11-bookworm as builder_base
+FROM python:3.11-bookworm AS builder_base
 
 ENV \
   # locale
@@ -77,7 +77,7 @@ RUN --mount=type=ssh pip3 install wheel virtualenv \
 ####################################
 # Base stage for production builds #
 ####################################
-FROM builder_base as production_build
+FROM builder_base AS production_build
 # Copy entrypoint script
 COPY ./docker/entrypoint.sh /docker-entrypoint.sh
 # Only files needed by production setup
@@ -94,7 +94,7 @@ RUN --mount=type=ssh source /.venv/bin/activate \
 #########################
 # Main production build #
 #########################
-FROM python:3.11-slim-bookworm as production
+FROM python:3.11-slim-bookworm AS production
 COPY --from=production_build /tmp/wheelhouse /tmp/wheelhouse
 COPY --from=production_build /docker-entrypoint.sh /docker-entrypoint.sh
 WORKDIR /app
@@ -120,7 +120,7 @@ ENTRYPOINT ["/usr/bin/tini", "--", "/docker-entrypoint.sh"]
 #####################################
 # Base stage for development builds #
 #####################################
-FROM builder_base as devel_build
+FROM builder_base AS devel_build
 # Install deps
 WORKDIR /pysetup
 RUN --mount=type=ssh source /.venv/bin/activate \
@@ -131,7 +131,7 @@ RUN --mount=type=ssh source /.venv/bin/activate \
 #0############
 # Run tests #
 #############
-FROM devel_build as test
+FROM devel_build AS test
 COPY . /app
 WORKDIR /app
 ENTRYPOINT ["/usr/bin/tini", "--", "docker/entrypoint-test.sh"]
@@ -145,7 +145,7 @@ RUN --mount=type=ssh source /.venv/bin/activate \
 ###########
 # Hacking #
 ###########
-FROM devel_build as devel_shell
+FROM devel_build AS devel_shell
 # Copy everything to the image
 COPY . /app
 WORKDIR /app
