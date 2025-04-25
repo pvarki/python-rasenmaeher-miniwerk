@@ -50,7 +50,7 @@ class MWConfig(BaseSettings):
     )
     bl: ProductSettings = Field(
         description="Setting for BattleLog intration API",
-        default_factory=lambda: ProductSettings(api_port=4627, user_port=4627, api_base="/rmapi/"),
+        default_factory=lambda: ProductSettings(api_port=4666, user_port=4666),
     )
 
     le_cert_name: str = Field(default="rasenmaeher", description="--cert-name for LE, used to determine directory name")
