@@ -52,9 +52,15 @@ async def create_rasenmaeher_manifest() -> Path:
             LOGGER.error("No config for {}".format(productname))
             continue
         product_config = cast(ProductSettings, product_config)
+        if not product_config.api_host:
+            product_config.api_host = productname
+        if not product_config.user_host:
+            product_config.user_host = productname
+        apihost = product_config.api_host
+        userhost = product_config.user_host
         manifest["products"][productname] = {  # type: ignore[index]   # false positive
-            "api": f"https://{productname}.{config.domain}:{product_config.api_port}{product_config.api_base}",
-            "uri": f"https://{productname}.{config.domain}:{product_config.user_port}{product_config.user_base}",
+            "api": f"https://{apihost}.{config.domain}:{product_config.api_port}{product_config.api_base}",
+            "uri": f"https://{userhost}.{config.domain}:{product_config.user_port}{product_config.user_base}",
             "certcn": f"{productname}.{config.domain}",
         }
     manifest_path.write_text(json.dumps(manifest), encoding="utf-8")

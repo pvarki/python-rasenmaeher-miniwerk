@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "miniwerk"
-version = "1.3.3"
+version = "1.3.4"
 description = "Minimal KRAFTWERK amulation to be able to run a RASENMAEHER+products deployment on any VM"
 authors = ["Eero af Heurlin <eero.afheurlin@iki.fi>"]
 homepage = "https://github.com/pvarki/python-rasenmaeher-miniwerk/"

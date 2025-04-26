@@ -18,9 +18,11 @@ class KeyType(StrEnum):
 class ProductSettings(BaseSettings):
     """Configs for each product"""
 
+    api_host: str = Field(description="API hostname (prefix)", default="")
     api_port: int = Field(description="port for the API")
-    user_port: int = Field(description="port for the normal users")
     api_base: str = Field(description="base url for the API", default="/")
+    user_host: str = Field(description="user hostname (prefix)", default="")
+    user_port: int = Field(description="port for the normal users")
     user_base: str = Field(description="base url for normal users", default="/")
 
     model_config = SettingsConfigDict(extra="ignore")
@@ -38,19 +40,19 @@ class MWConfig(BaseSettings):
         default="fake,tak,bl", description="Comma separated list of products to create manifests and get subdomains for"
     )
     fake: ProductSettings = Field(
-        description="Setting for fakeproduct intration API",
-        default_factory=lambda: ProductSettings(api_port=4625, user_port=4625),
+        description="Setting for fakeproduct integration API",
+        default_factory=lambda: ProductSettings(api_host="fake", user_host="fake", api_port=4625, user_port=4625),
     )
     tak: ProductSettings = Field(
-        description="Setting for TAK intration API",
-        default_factory=lambda: ProductSettings(api_port=4626, user_port=8443),
+        description="Setting for TAK integration API",
+        default_factory=lambda: ProductSettings(api_host="tak", user_host="tak", api_port=4625, user_port=8443),
     )
     rasenmaeher: ProductSettings = Field(
         description="Setting for RASENMAEHER API", default_factory=lambda: ProductSettings(api_port=443, user_port=443)
     )
     bl: ProductSettings = Field(
-        description="Setting for BattleLog intration API",
-        default_factory=lambda: ProductSettings(api_port=4666, user_port=4666),
+        description="Setting for BattleLog integration API",
+        default_factory=lambda: ProductSettings(api_host="bl", user_host="bl", api_port=4625, user_port=4625),
     )
 
     le_cert_name: str = Field(default="rasenmaeher", description="--cert-name for LE, used to determine directory name")
