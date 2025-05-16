@@ -41,18 +41,18 @@ class MWConfig(BaseSettings):
     )
     fake: ProductSettings = Field(
         description="Setting for fakeproduct integration API",
-        default_factory=lambda: ProductSettings(api_host="fake", user_host="fake", api_port=4625, user_port=4625),
+        default_factory=lambda: ProductSettings(api_host="fake", user_host="fake", api_port=4626, user_port=4626),
     )
     tak: ProductSettings = Field(
         description="Setting for TAK integration API",
-        default_factory=lambda: ProductSettings(api_host="tak", user_host="tak", api_port=4625, user_port=8443),
+        default_factory=lambda: ProductSettings(api_host="tak", user_host="tak", api_port=4626, user_port=8443),
     )
     rasenmaeher: ProductSettings = Field(
         description="Setting for RASENMAEHER API", default_factory=lambda: ProductSettings(api_port=443, user_port=443)
     )
     bl: ProductSettings = Field(
         description="Setting for BattleLog integration API",
-        default_factory=lambda: ProductSettings(api_host="bl", user_host="bl", api_port=4625, user_port=4625),
+        default_factory=lambda: ProductSettings(api_host="bl", user_host="bl", api_port=4626, user_port=4626),
     )
 
     le_cert_name: str = Field(default="rasenmaeher", description="--cert-name for LE, used to determine directory name")
