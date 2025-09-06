@@ -1,5 +1,5 @@
 """Handle manifests"""
-from typing import cast, List, Dict
+from typing import cast, List, Dict, Optional
 import logging
 import json
 import uuid
@@ -28,6 +28,21 @@ async def copy_jwt_pub(manifest_dir: Path) -> None:
     LOGGER.info("Wrote {}".format(pubkeypath))
 
 
+def get_product_config(productname: str) -> Optional[ProductSettings]:
+    """Get normalized product config"""
+    config = MWConfig.singleton()
+    product_config = getattr(config, productname, None)
+    if not product_config:
+        LOGGER.error("No config for {}".format(productname))
+        return None
+    product_config = cast(ProductSettings, product_config)
+    if not product_config.api_host:
+        product_config.api_host = productname
+    if not product_config.user_host:
+        product_config.user_host = productname
+    return cast(ProductSettings, product_config)
+
+
 async def create_rasenmaeher_manifest() -> Path:
     """create manifest for RASENMAEHER"""
     config = MWConfig.singleton()
@@ -47,15 +62,10 @@ async def create_rasenmaeher_manifest() -> Path:
         "products": cast(Dict[str, Dict[str, str]], {}),
     }
     for productname in config.product_manifest_paths.keys():
-        product_config = getattr(config, productname, None)
+        product_config = get_product_config(productname)
         if not product_config:
             LOGGER.error("No config for {}".format(productname))
             continue
-        product_config = cast(ProductSettings, product_config)
-        if not product_config.api_host:
-            product_config.api_host = productname
-        if not product_config.user_host:
-            product_config.user_host = productname
         apihost = product_config.api_host
         userhost = product_config.user_host
         manifest["products"][productname] = {  # type: ignore[index]   # false positive
@@ -96,6 +106,12 @@ async def create_product_manifest(productname: str) -> Path:
     else:
         rm_uri = f"https://{config.domain}/"
     mtls_uri = rm_uri.replace("https://", "https://mtls.")
+    product_config = get_product_config(productname)
+    if not product_config:
+        LOGGER.error("No config for {}".format(productname))
+        return manifest_path
+    apihost = product_config.api_host
+    userhost = product_config.user_host
     manifest = {
         "deployment": config.domain.split(".")[0],
         "rasenmaeher": {
@@ -103,7 +119,11 @@ async def create_product_manifest(productname: str) -> Path:
             "mtls": {"base_uri": mtls_uri},
             "certcn": "rasenmaeher",
         },
-        "product": {"dns": f"{productname}.{config.domain}"},
+        "product": {
+            "dns": f"{productname}.{config.domain}",
+            "api": f"https://{apihost}.{config.domain}:{product_config.api_port}{product_config.api_base}",
+            "uri": f"https://{userhost}.{config.domain}:{product_config.user_port}{product_config.user_base}",
+        },
     }
     manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
     LOGGER.info("Wrote {}".format(manifest_path))
