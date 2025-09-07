@@ -1,4 +1,5 @@
 """Package level tests"""
+
 from miniwerk import __version__
 
 

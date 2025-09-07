@@ -1,4 +1,5 @@
 """Handle manifests"""
+
 from typing import cast, List, Dict, Optional
 import logging
 import json
@@ -40,7 +41,7 @@ def get_product_config(productname: str) -> Optional[ProductSettings]:
         product_config.api_host = productname
     if not product_config.user_host:
         product_config.user_host = productname
-    return cast(ProductSettings, product_config)
+    return product_config
 
 
 async def create_rasenmaeher_manifest() -> Path:

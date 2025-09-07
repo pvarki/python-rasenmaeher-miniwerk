@@ -1,4 +1,5 @@
 """pytest automagics"""
+
 from typing import Generator
 import logging
 from pathlib import Path

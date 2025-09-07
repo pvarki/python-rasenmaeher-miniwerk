@@ -1,4 +1,5 @@
 """Test the config class"""
+
 import logging
 
 import pytest
