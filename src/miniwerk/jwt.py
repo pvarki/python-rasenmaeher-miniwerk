@@ -1,4 +1,5 @@
 """JWT wrappers"""
+
 from typing import Tuple
 import asyncio
 import logging

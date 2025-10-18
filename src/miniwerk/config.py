@@ -1,4 +1,5 @@
 """Configuration"""
+
 from __future__ import annotations
 from typing import ClassVar, Optional, List, Dict
 from pathlib import Path
@@ -61,15 +62,16 @@ class MWConfig(BaseSettings):
     )
 
     le_cert_name: str = Field(default="rasenmaeher", description="--cert-name for LE, used to determine directory name")
-    le_copy_path: Path = Field(default="/le_certs", description="Where to copy letsencrypt certs and keys")
-    data_path: Path = Field(default="/data/persistent", description="Where do we keep our data")
-    manifests_base: Path = Field(
+    # FIXME: how to cast the Fields to correct types
+    le_copy_path: Path = Field(default="/le_certs", description="Where to copy letsencrypt certs and keys")  # type: ignore[assignment] # pylint: disable=C0301
+    data_path: Path = Field(default="/data/persistent", description="Where do we keep our data")  # type: ignore[assignment] # pylint: disable=C0301
+    manifests_base: Path = Field(  # type: ignore[assignment]
         default="/pvarkishares", description="Path for manifests etc, each product gets a subdir"
     )
 
     mkcert: bool = Field(default=False, description="Use mkcert instead of certbot")
     ci: bool = Field(default=False, alias="CI", description="Are we running in CI")
-    keytype: KeyType = Field(default="ecdsa", description="Which key types to use, rsa or ecdsa (default)")
+    keytype: KeyType = Field(default="ecdsa", description="Which key types to use, rsa or ecdsa (default)")  # type: ignore[assignment] # pylint: disable=C0301
     model_config = SettingsConfigDict(env_prefix="mw_", env_file=".env", extra="ignore", env_nested_delimiter="__")
     _singleton: ClassVar[Optional[MWConfig]] = None
 

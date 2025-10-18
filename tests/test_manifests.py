@@ -1,4 +1,5 @@
 """Test manifest creation"""
+
 import logging
 import json
 from pathlib import Path
