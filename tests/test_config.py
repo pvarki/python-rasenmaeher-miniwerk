@@ -16,7 +16,7 @@ def test_defaults() -> None:
     assert cfg.ci is True
     assert cfg.domain == "pytest.pvarki.fi"
     assert cfg.subdomains == "mtls"
-    assert cfg.products == "fake,tak,bl,mtx,matrix"
+    assert cfg.products == "fake,tak,bl,mtx,matrix,airguardian"
     assert str(cfg.data_path) != "/data/persistent"
     assert cfg.le_email == "example@example.com"
     LOGGER.debug("cfg.fqdns={}".format(cfg.fqdns))
@@ -35,6 +35,8 @@ def test_defaults() -> None:
         "mtx.pytest.pvarki.fi",
         "mtls.matrix.pytest.pvarki.fi",
         "matrix.pytest.pvarki.fi",
+        "mtls.airguardian.pytest.pvarki.fi",
+        "airguardian.pytest.pvarki.fi",
     }
     assert cfg.keytype is KeyType.ECDSA
 
