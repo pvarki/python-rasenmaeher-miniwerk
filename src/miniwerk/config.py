@@ -62,9 +62,7 @@ class MWConfig(BaseSettings):
     )
     airguardian: ProductSettings = Field(
         description="Setting for Airguardian integration API",
-        default_factory=lambda: ProductSettings(
-            api_host="airguardian", user_host="agpractice", api_port=4626, user_port=4626
-        ),
+        default_factory=lambda: ProductSettings(api_host="airguardian", user_host="agpractice", api_port=4626, user_port=4626),
     )
 
     le_cert_name: str = Field(default="rasenmaeher", description="--cert-name for LE, used to determine directory name")
