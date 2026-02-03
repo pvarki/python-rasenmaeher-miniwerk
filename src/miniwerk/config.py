@@ -38,7 +38,7 @@ class MWConfig(BaseSettings):
     le_test: bool = Field(default=True, description="Use LE staging/test env")
     subdomains: str = Field(default="mtls", description="Comma separated list of extra subdomains to get certs for")
     products: str = Field(
-        default="fake,tak,bl,mtx",
+        default="fake,tak,bl,mtx,airmarine",
         description="Comma separated list of products to create manifests and get subdomains for",
     )
     fake: ProductSettings = Field(
@@ -59,6 +59,10 @@ class MWConfig(BaseSettings):
     mtx: ProductSettings = Field(
         description="Setting for MediaMTX integration API",
         default_factory=lambda: ProductSettings(api_host="mtx", user_host="mtx", api_port=4626, user_port=9888),
+    )
+    airmarine: ProductSettings = Field(
+        description="Setting for Air&Marine integration API",
+        default_factory=lambda: ProductSettings(api_host="airmarine", user_host="airmarine", api_port=4626, user_port=9888),
     )
 
     le_cert_name: str = Field(default="rasenmaeher", description="--cert-name for LE, used to determine directory name")
