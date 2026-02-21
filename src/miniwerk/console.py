@@ -44,7 +44,9 @@ def do_certs(ctx: Any) -> None:
     async def call() -> int:
         """Do the call"""
         config = MWConfig.singleton()
-        if config.mkcert:
+        if config.extcert:
+            LOGGER.info("EXTernal certificate handling specified")
+        elif config.mkcert:
             await get_mk_certs()
         else:
             await get_le_certs()
@@ -77,7 +79,9 @@ def do_full_init(ctx: Any) -> None:
         config = MWConfig.singleton()
         await create_rasenmaeher_manifest()
         await create_all_product_manifests()
-        if config.mkcert:
+        if config.extcert:
+            LOGGER.info("EXTernal certificate handling specified")
+        elif config.mkcert:
             await get_mk_certs()
         else:
             await get_le_certs()

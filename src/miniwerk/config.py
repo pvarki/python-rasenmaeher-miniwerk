@@ -75,6 +75,7 @@ class MWConfig(BaseSettings):
         default="/pvarkishares", description="Path for manifests etc, each product gets a subdir"
     )
 
+    extcert: bool = Field(default=False, description="Do not use certbot or mkcert, something else handles certs")
     mkcert: bool = Field(default=False, description="Use mkcert instead of certbot")
     ci: bool = Field(default=False, alias="CI", description="Are we running in CI")
     keytype: KeyType = Field(default="ecdsa", description="Which key types to use, rsa or ecdsa (default)")  # type: ignore[assignment] # pylint: disable=C0301
