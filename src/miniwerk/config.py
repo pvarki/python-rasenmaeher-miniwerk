@@ -38,7 +38,7 @@ class MWConfig(BaseSettings):
     le_test: bool = Field(default=True, description="Use LE staging/test env")
     subdomains: str = Field(default="mtls", description="Comma separated list of extra subdomains to get certs for")
     products: str = Field(
-        default="fake,tak,bl,mtx,airguardian",
+        default="fake,tak,bl,mtx",
         description="Comma separated list of products to create manifests and get subdomains for",
     )
     fake: ProductSettings = Field(
@@ -60,12 +60,6 @@ class MWConfig(BaseSettings):
         description="Setting for MediaMTX integration API",
         default_factory=lambda: ProductSettings(api_host="mtx", user_host="mtx", api_port=4626, user_port=9888),
     )
-    airguardian: ProductSettings = Field(
-        description="Setting for Airguardian integration API",
-        default_factory=lambda: ProductSettings(
-            api_host="airguardian", user_host="agpractice", api_port=4626, user_port=4626
-        ),
-    )
 
     le_cert_name: str = Field(default="rasenmaeher", description="--cert-name for LE, used to determine directory name")
     # FIXME: how to cast the Fields to correct types
@@ -75,6 +69,7 @@ class MWConfig(BaseSettings):
         default="/pvarkishares", description="Path for manifests etc, each product gets a subdir"
     )
 
+    extcert: bool = Field(default=False, description="Do not use certbot or mkcert, something else handles certs")
     mkcert: bool = Field(default=False, description="Use mkcert instead of certbot")
     ci: bool = Field(default=False, alias="CI", description="Are we running in CI")
     keytype: KeyType = Field(default="ecdsa", description="Which key types to use, rsa or ecdsa (default)")  # type: ignore[assignment] # pylint: disable=C0301

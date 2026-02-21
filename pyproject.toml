@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "miniwerk"
-version = "1.5.0"
+version = "1.6.0"
 description = "Minimal KRAFTWERK amulation to be able to run a RASENMAEHER+products deployment on any VM"
 authors = ["Eero af Heurlin <eero.afheurlin@iki.fi>"]
 homepage = "https://github.com/pvarki/python-rasenmaeher-miniwerk/"
@@ -74,12 +74,12 @@ pydantic-settings = "^2.0"
 pytest = "^7.4"
 coverage = "^7.3"
 pytest-cov = "^4.1"
-pylint = "^2.17"
-black = "^25.1"
+pylint = "^4.0"
+black = "^25.9"
 bandit = "^1.8"
-mypy = "^1.17"
+mypy = "^1.18"
 pre-commit = "^3.3"
-pytest-asyncio = ">=0.21,<1.0" # caret behaviour on 0.x is to lock to 0.x.*
+pytest-asyncio = ">=0.23,<1.0" # caret behaviour on 0.x is to lock to 0.x.*
 bump2version = "^1.0"
 detect-secrets = "^1.5"
 
