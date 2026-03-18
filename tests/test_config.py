@@ -16,9 +16,11 @@ def test_defaults() -> None:
     assert cfg.ci is True
     assert cfg.domain == "pytest.pvarki.fi"
     assert cfg.subdomains == "mtls"
-    assert cfg.products == "fake,tak,bl,mtx"
+    assert cfg.products == "fake,tak,bl,mtx,cryptpad"
     assert str(cfg.data_path) != "/data/persistent"
     assert cfg.le_email == "example@example.com"
+    assert cfg.cryptpad.api_host == "rmcryptpad"  # pylint: disable=E1101
+    assert cfg.cryptpad.user_host == "mtls.cryptpad"  # pylint: disable=E1101
     LOGGER.debug("cfg.fqdns={}".format(cfg.fqdns))
     assert set(cfg.fqdns) == {
         "mtls.tak.pytest.pvarki.fi",
@@ -33,6 +35,11 @@ def test_defaults() -> None:
         "bl.pytest.pvarki.fi",
         "mtls.mtx.pytest.pvarki.fi",
         "mtx.pytest.pvarki.fi",
+        "cryptpad.pytest.pvarki.fi",
+        "mtls.cryptpad.pytest.pvarki.fi",
+        "rmcryptpad.pytest.pvarki.fi",
+        "sandbox.cryptpad.pytest.pvarki.fi",
+        "mtls.sandbox.cryptpad.pytest.pvarki.fi",
     }
     assert cfg.keytype is KeyType.ECDSA
 
@@ -54,10 +61,18 @@ def test_sub_config_env(monkeypatch: pytest.MonkeyPatch) -> None:
     with monkeypatch.context() as mpatch:
         mpatch.setenv("MW_RASENMAEHER__API_PORT", "4439")
         mpatch.setenv("MW_RASENMAEHER__USER_PORT", "4439")
+        mpatch.setenv("MW_CRYPTPAD__API_HOST", "api-cryptpad")
+        mpatch.setenv("MW_CRYPTPAD__API_PORT", "4631")
+        mpatch.setenv("MW_CRYPTPAD__USER_HOST", "mtls.customcryptpad")
+        mpatch.setenv("MW_CRYPTPAD__USER_PORT", "4632")
         mpatch.setenv("MW_KEYTYPE", "rsa")
         cfg = MWConfig()  # type: ignore[call-arg]
         LOGGER.debug("cfg={}".format(cfg))
         assert cfg.rasenmaeher.api_port == 4439  # pylint: disable=E1101  # false positive
+        assert cfg.cryptpad.api_host == "api-cryptpad"  # pylint: disable=E1101
+        assert cfg.cryptpad.api_port == 4631  # pylint: disable=E1101
+        assert cfg.cryptpad.user_host == "mtls.customcryptpad"  # pylint: disable=E1101
+        assert cfg.cryptpad.user_port == 4632  # pylint: disable=E1101
         assert cfg.keytype is KeyType.RSA
 
 

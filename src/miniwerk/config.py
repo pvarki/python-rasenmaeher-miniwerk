@@ -38,7 +38,7 @@ class MWConfig(BaseSettings):
     le_test: bool = Field(default=True, description="Use LE staging/test env")
     subdomains: str = Field(default="mtls", description="Comma separated list of extra subdomains to get certs for")
     products: str = Field(
-        default="fake,tak,bl,mtx",
+        default="fake,tak,bl,mtx,cryptpad",
         description="Comma separated list of products to create manifests and get subdomains for",
     )
     fake: ProductSettings = Field(
@@ -59,6 +59,15 @@ class MWConfig(BaseSettings):
     mtx: ProductSettings = Field(
         description="Setting for MediaMTX integration API",
         default_factory=lambda: ProductSettings(api_host="mtx", user_host="mtx", api_port=4626, user_port=9888),
+    )
+    cryptpad: ProductSettings = Field(
+        description="Setting for CryptPad integration API",
+        default_factory=lambda: ProductSettings(
+            api_host="rmcryptpad",
+            api_port=4626,
+            user_host="mtls.cryptpad",
+            user_port=4626,
+        ),
     )
 
     le_cert_name: str = Field(default="rasenmaeher", description="--cert-name for LE, used to determine directory name")
@@ -112,11 +121,20 @@ class MWConfig(BaseSettings):
     def fqdns(self) -> List[str]:
         """Main domain and all subdomains and FQDNs"""
         ret = [f"{subd.strip()}.{self.domain}" for subd in str(self.subdomains).split(",")]
-        for proddomain in [f"{prod.strip()}.{self.domain}" for prod in (str(self.products).split(",") + ["kc"])]:
+        productnames = [prod.strip() for prod in str(self.products).split(",") if prod.strip()]
+        for proddomain in [f"{prod}.{self.domain}" for prod in (productnames + ["kc"])]:
             ret.append(proddomain)
             ret += [f"{subd.strip()}.{proddomain}" for subd in str(self.subdomains).split(",")]
+        if "cryptpad" in productnames:
+            ret.extend(
+                [
+                    f"rmcryptpad.{self.domain}",
+                    f"sandbox.cryptpad.{self.domain}",
+                    f"mtls.sandbox.cryptpad.{self.domain}",
+                ]
+            )
         ret.append(self.domain)
-        return ret
+        return list(dict.fromkeys(ret))
 
     @property
     def product_manifest_paths(self) -> Dict[str, Path]:
