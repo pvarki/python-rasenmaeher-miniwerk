@@ -66,7 +66,7 @@ class MWConfig(BaseSettings):
             api_host="rmcryptpad",
             api_port=4626,
             user_host="mtls.cryptpad",
-            user_port=4626,
+            user_port=8555,
         ),
     )
 
