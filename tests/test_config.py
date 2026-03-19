@@ -21,7 +21,7 @@ def test_defaults() -> None:
     assert cfg.le_email == "example@example.com"
     assert cfg.cryptpad.api_host == "rmcryptpad"  # pylint: disable=E1101
     assert cfg.cryptpad.user_host == "mtls.cryptpad"  # pylint: disable=E1101
-    assert cfg.cryptpad.user_port == 8555  # pylint: disable=E1101
+    assert cfg.cryptpad.user_port == 4626  # pylint: disable=E1101
     LOGGER.debug("cfg.fqdns={}".format(cfg.fqdns))
     assert set(cfg.fqdns) == {
         "mtls.tak.pytest.pvarki.fi",

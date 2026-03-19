@@ -34,7 +34,7 @@ async def test_rm_manifest() -> None:
     assert "certcn" in manifest["products"]["tak"]
     assert manifest["products"]["tak"]["certcn"] == "tak.pytest.pvarki.fi"
     assert manifest["products"]["cryptpad"]["api"] == "https://rmcryptpad.pytest.pvarki.fi:4626/"
-    assert manifest["products"]["cryptpad"]["uri"] == "https://mtls.cryptpad.pytest.pvarki.fi:8555/"
+    assert manifest["products"]["cryptpad"]["uri"] == "https://mtls.cryptpad.pytest.pvarki.fi:4626/"
     assert manifest["products"]["cryptpad"]["certcn"] == "cryptpad.pytest.pvarki.fi"
 
 
@@ -64,4 +64,4 @@ async def test_cryptpad_manifest() -> None:
     LOGGER.debug("manifest={}".format(manifest))
     assert manifest["product"]["dns"] == f"cryptpad.{config.domain}"
     assert manifest["product"]["api"] == f"https://rmcryptpad.{config.domain}:4626/"
-    assert manifest["product"]["uri"] == f"https://mtls.cryptpad.{config.domain}:8555/"
+    assert manifest["product"]["uri"] == f"https://mtls.cryptpad.{config.domain}:4626/"
