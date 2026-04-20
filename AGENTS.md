@@ -33,7 +33,7 @@ docker start -i miniwerk_devel
 # MW_LE_EMAIL       — Let's Encrypt account email
 # MW_LE_TEST=true   — Use LE staging (local dev); false for production
 # MW_MKCERT=true    — Use mkcert instead of LE (fully local, no DNS needed)
-# MW_PRODUCTS       — Space-separated list of product names to provision
+# MW_PRODUCTS       — Comma-separated list of product names to provision
 ```
 
 ## Running Tests
@@ -55,6 +55,14 @@ pre-commit run --all-files
 - Follow pylint rules from root `pylintrc`
 
 ## Architecture Notes
+**`src/miniwerk/config.py`** defines the
+`MWConfig` settings model (read from `MW_*` env vars) and the per-product
+`ProductSettings` defaults which products exist, which subdomains they own,
+and which ports they listen on. Manifest generation, FQDN enumeration, and
+certificate provisioning all read from here. Any change to which products
+miniwerk supports starts in this file; env vars only override the defaults
+defined there.
+
 **Startup order:** miniwerk MUST be healthy before cfssl, postgres, keycloak, or any product
 service starts. The compose health-check dependency chain enforces this.
 
@@ -77,7 +85,80 @@ to `/pvarki/kraftwerk-rasenmaeher-init.json` inside the product's shared volume.
 - CA public cert → `ca_public:/ca_public/ca_chain.pem` (read by all services)
 
 **Domains provisioned:** miniwerk handles: `domain`, `kc.domain`, `tak.domain`, `bl.domain`,
-`mtx.domain`, `mtls.domain`, and all `mtls.*` variants.
+`mtx.domain`, `matrix.domain`, `mtls.domain`, and all `mtls.*` variants.
+
+## Adding a New Product Integration
+The set of changes is small but every step matters — skipping any of them will
+break either tests, manifest generation, or TLS provisioning. Throughout this
+section, replace `<new-product-name-here>` with the short-name of the product
+you're adding (lowercase, no dots, matches what the rest of the stack will use
+as the subdomain prefix e.g. `tak`, `bl`, `mtx`).
+
+### 1. Register the product in `src/miniwerk/config.py`
+- Append the short-name to the comma-separated `products` default. This string
+  is the source of truth for which manifests get generated and which FQDNs get
+  certificates. Pattern: `"fake,tak,bl,mtx,<new-product-name-here>"`.
+- Add a new `ProductSettings` field on `MWConfig` with a `default_factory`:
+  ```python
+  <new-product-name-here>: ProductSettings = Field(
+      description="Settings for <New Product> integration API",
+      default_factory=lambda: ProductSettings(
+          api_host="<new-product-name-here>",
+          user_host="<new-product-name-here>",
+          api_port=4626,
+          user_port=4626,
+      ),
+  )
+  ```
+- Pick `api_port` / `user_port` to match the product's exposed listeners.
+  Most internal APIs use `4626` (the standard mTLS API port). The user-facing
+  port is whatever the product serves end users on — copy from a similar
+  existing product rather than guessing.
+- `api_host` / `user_host` are subdomain prefixes, they become
+  `<host>.<MW_DOMAIN>`. Keep them identical to the product short-name unless
+  there's a real reason to diverge (none of the existing products do).
+- Do **not** add `kc` to the `products` list, it is appended programmatically
+  and adding it manually will produce duplicate manifests.
+
+### 2. Update `tests/test_config.py`
+The FQDN test enumerates the exact set of hostnames miniwerk will request
+certificates for. Add **both** the base FQDN and its `mtls.` variant for the
+new product:
+```
+<new-product-name-here>.pytest.pvarki.fi
+mtls.<new-product-name-here>.pytest.pvarki.fi
+```
+Also extend the expected `products` string in any test that asserts on the
+default products list. If you skip this, the test fails noisily — which is the
+correct behavior. Don't "fix" it by trimming the product back out.
+
+### 3. Bump the version
+Use bumpversion so all four locations stay in sync:
+```bash
+bumpversion patch    # or minor, if the integration is user-visible
+```
+This updates `.bumpversion.cfg`, `pyproject.toml`, `src/miniwerk/__init__.py`,
+and `tests/test_miniwerk.py` together. Editing them by hand is a known source
+of CI failures — let the tool do it.
+
+### 4. Verify before opening a PR
+Run the test suite (see the **Running Tests** section above) and confirm the
+FQDN test in `tests/test_config.py` passes with the new product's base and
+`mtls.` hostnames in the expected set. The FQDN test is the early warning that
+something is off - if it passes, cert provisioning and manifest generation will
+line up too.
+
+### 5. Downstream consequences (no action in miniwerk, but plan ahead)
+Adding a product here means the product's own service must:
+- Be reachable at `<new-product-name-here>.<MW_DOMAIN>` and
+  `mtls.<new-product-name-here>.<MW_DOMAIN>` (DNS records must exist before LE
+  provisioning runs in production).
+- Mount the shared `le_certs` and `ca_public` volumes to read its certs.
+- Read its kraftwerk manifest from `/pvarki/kraftwerk-rasenmaeher-init.json`.
+
+The compose file in
+[docker-rasenmaeher-integration](https://github.com/pvarki/docker-rasenmaeher-integration)
+is where those wiring changes land, not in miniwerk itself.
 
 ## Common Agent Pitfalls
 1. **miniwerk MUST complete before anything else.** If you see other services crashing on
