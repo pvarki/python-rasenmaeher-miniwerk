@@ -12,7 +12,7 @@ Nothing else can start until miniwerk is healthy.
 - **Framework:** Custom async (aiohttp-based)
 - **Key libs:** libpvarki, cryptography, certbot / mkcert
 - **Testing:** pytest, tox (65% minimum coverage)
-- **Linting:** pre-commit, pylint
+- **Linting:** prek (drop-in pre-commit replacement), pylint
 - **Container:** Docker multi-target (devel_shell, tox, production)
 - **Port:** 80 (internal cert delivery)
 
@@ -45,9 +45,9 @@ docker run --rm -it -v $(pwd):/app $(echo $DOCKER_SSHAGENT) miniwerk:tox
 # Direct pytest inside devel_shell
 pytest tests/ -v --cov=miniwerk --cov-fail-under=65
 
-# Pre-commit
-pre-commit install --install-hooks
-pre-commit run --all-files
+# Pre-commit hooks (run via prek)
+prek install --install-hooks
+prek run --all-files
 ```
 
 ## Code Conventions

@@ -43,15 +43,19 @@ Build image, create container and start it::
 pre-commit considerations
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If working in Docker instead of native env you need to run the pre-commit checks in docker too::
+Hooks are run via prek_, a drop-in replacement for pre-commit that reuses the same
+``.pre-commit-config.yaml``. If working in Docker instead of native env you need to run
+the hooks in docker too::
 
-    docker exec -i miniwerk_devel /bin/bash -c "pre-commit install --install-hooks"
-    docker exec -i miniwerk_devel /bin/bash -c "pre-commit run --all-files"
+    docker exec -i miniwerk_devel /bin/bash -c "prek install --install-hooks"
+    docker exec -i miniwerk_devel /bin/bash -c "prek run --all-files"
 
 You need to have the container running, see above. Or alternatively use the docker run syntax but using
 the running container is faster::
 
-    docker run --rm -it -v `pwd`":/app" miniwerk:devel_shell -c "pre-commit run --all-files"
+    docker run --rm -it -v `pwd`":/app" miniwerk:devel_shell -c "prek run --all-files"
+
+.. _prek: https://github.com/j178/prek
 
 Test suite
 ^^^^^^^^^^
@@ -84,12 +88,12 @@ TLDR:
 
     git checkout -b my_branch
 
-- install Poetry: https://python-poetry.org/docs/#installation
-- Install project deps and pre-commit hooks::
+- install uv: https://docs.astral.sh/uv/getting-started/installation/
+- Install project deps and git hooks::
 
-    poetry install
-    pre-commit install --install-hooks
-    pre-commit run --all-files
+    uv sync
+    uv run prek install --install-hooks
+    uv run prek run --all-files
 
 - Ready to go.
 
