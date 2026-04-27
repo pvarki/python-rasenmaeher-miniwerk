@@ -1,15 +1,59 @@
-[tool.poetry]
+[project]
 name = "miniwerk"
 version = "1.7.1"
 description = "Minimal KRAFTWERK amulation to be able to run a RASENMAEHER+products deployment on any VM"
-authors = ["Eero af Heurlin <eero.afheurlin@iki.fi>"]
-homepage = "https://github.com/pvarki/python-rasenmaeher-miniwerk/"
-repository = "https://github.com/pvarki/python-rasenmaeher-miniwerk/"
-license = "MIT"
+authors = [
+    { name = "Eero af Heurlin", email = "eero.afheurlin@iki.fi" },
+]
+license = { text = "MIT" }
 readme = "README.rst"
+requires-python = ">=3.11,<4.0"
+dependencies = [
+    "libadvian>=1.4,<2",
+    "click>=8.0,<9",
+    "certbot>=2.6,<3",
+    "multikeyjwt>=1.2,<2",
+    "aiohttp>=3.8,<4",
+    "aiodns>=3.0,<4",
+    "brotli>=1.0,<2",
+    "cchardet>=2.1,<3 ; python_version <= '3.10'",
+    "pydantic-settings>=2.0,<3",
+]
 
-[tool.poetry.scripts]
+[project.urls]
+Homepage = "https://github.com/pvarki/python-rasenmaeher-miniwerk/"
+Repository = "https://github.com/pvarki/python-rasenmaeher-miniwerk/"
+
+[project.scripts]
 miniwerk = "miniwerk.console:miniwerk_cli"
+
+[dependency-groups]
+dev = [
+    "pytest>=7.4,<8",
+    "coverage>=7.3,<8",
+    "pytest-cov>=4.1,<5",
+    "pylint>=4.0,<5",
+    "black>=25.9,<26",
+    "bandit>=1.8,<2",
+    "mypy>=1.18,<2",
+    "pre-commit>=3.3,<4",
+    "pytest-asyncio>=0.23,<1.0",
+    "bump2version>=1.0,<2",
+    "detect-secrets>=1.5,<2",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/miniwerk"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/miniwerk",
+    "README.rst",
+]
 
 [tool.black]
 line-length = 120
@@ -33,12 +77,12 @@ exclude = '''
 '''
 
 [tool.mypy]
-strict=true
+strict = true
 
 [tool.pytest.ini_options]
-junit_family="xunit2"
-addopts="--cov=miniwerk --cov-fail-under=65 --cov-branch"
-asyncio_mode="strict"
+junit_family = "xunit2"
+addopts = "--cov=miniwerk --cov-fail-under=65 --cov-branch"
+asyncio_mode = "strict"
 
 [tool.pylint.format]
 max-line-length = 120
@@ -47,7 +91,7 @@ max-line-length = 120
 max-parents = 10
 
 [tool.pylint.messages_control]
-disable=["fixme", "W1202", "C0209"]
+disable = ["fixme", "W1202", "C0209"]
 
 [tool.pylint.similarities]
 min-similarity-lines = 8
@@ -56,33 +100,3 @@ ignore-imports = true
 [tool.coverage.run]
 omit = ["tests/*"]
 branch = true
-
-[tool.poetry.dependencies]
-python = ">=3.11,<4.0"
-libadvian = "^1.4"
-click = "^8.0"
-certbot = "^2.6"
-multikeyjwt = "^1.2"
-aiohttp = "^3.8"
-aiodns = "^3.0"
-brotli = "^1.0"
-cchardet = { version="^2.1", python="<=3.10"}
-pydantic-settings = "^2.0"
-
-
-[tool.poetry.group.dev.dependencies]
-pytest = "^7.4"
-coverage = "^7.3"
-pytest-cov = "^4.1"
-pylint = "^4.0"
-black = "^25.9"
-bandit = "^1.8"
-mypy = "^1.18"
-pre-commit = "^3.3"
-pytest-asyncio = ">=0.23,<1.0" # caret behaviour on 0.x is to lock to 0.x.*
-bump2version = "^1.0"
-detect-secrets = "^1.5"
-
-[build-system]
-requires = ["poetry-core>=1.2.0"]
-build-backend = "poetry.core.masonry.api"

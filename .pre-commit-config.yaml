@@ -66,15 +66,14 @@ repos:
     hooks:
     -   id: detect-secrets
         language: system
-        exclude: "poetry\\.lock"
+        exclude: "uv\\.lock"
         # args: ['--baseline', '.secrets.baseline']
 -   repo: https://github.com/rhysd/actionlint
     rev: "v1.7.8"
     hooks:
         - id: actionlint
           args: ["-shellcheck", "''"]
--   repo: https://github.com/python-poetry/poetry
-    rev: '2.2.1'
+-   repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.11.6
     hooks:
-    -   id: poetry-check
-    -   id: poetry-lock
+    -   id: uv-lock
