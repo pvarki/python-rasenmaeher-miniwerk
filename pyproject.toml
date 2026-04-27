@@ -1,6 +1,6 @@
 [project]
 name = "miniwerk"
-version = "1.7.1"
+version = "1.7.1+260427"
 description = "Minimal KRAFTWERK amulation to be able to run a RASENMAEHER+products deployment on any VM"
 authors = [
     { name = "Eero af Heurlin", email = "eero.afheurlin@iki.fi" },
@@ -38,7 +38,7 @@ dev = [
     "mypy>=1.18,<2",
     "prek>=0.3,<1",
     "pytest-asyncio>=0.23,<1.0",
-    "bump2version>=1.0,<2",
+    "bump-my-version>=1.2,<2.0",
     "detect-secrets>=1.5,<2",
 ]
 
