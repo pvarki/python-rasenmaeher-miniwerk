@@ -4,7 +4,7 @@ import logging
 
 import pytest
 
-from miniwerk.config import MWConfig, KeyType
+from miniwerk.config import KeyType, MWConfig
 
 LOGGER = logging.getLogger(__name__)
 
@@ -12,14 +12,14 @@ LOGGER = logging.getLogger(__name__)
 def test_defaults() -> None:
     """Test the config defaults"""
     cfg = MWConfig()  # type: ignore[call-arg]
-    LOGGER.debug("cfg={}".format(cfg))
+    LOGGER.debug(f"cfg={cfg}")
     assert cfg.ci is True
     assert cfg.domain == "pytest.pvarki.fi"
     assert cfg.subdomains == "mtls"
     assert cfg.products == "fake,tak,bl,mtx,matrix"
     assert str(cfg.data_path) != "/data/persistent"
     assert cfg.le_email == "example@example.com"
-    LOGGER.debug("cfg.fqdns={}".format(cfg.fqdns))
+    LOGGER.debug(f"cfg.fqdns={cfg.fqdns}")
     assert set(cfg.fqdns) == {
         "mtls.tak.pytest.pvarki.fi",
         "tak.pytest.pvarki.fi",
@@ -41,14 +41,14 @@ def test_defaults() -> None:
 
 def test_singleton() -> None:
     """Test the singleton fetcher"""
-    assert MWConfig._singleton is None  # pylint: disable=W0212
+    assert MWConfig._singleton is None
     cfg = MWConfig.singleton()
     # Check for the classvar
-    assert MWConfig._singleton is not None  # pylint: disable=W0212
+    assert MWConfig._singleton is not None
     assert cfg.ci is True
     assert cfg.domain == "pytest.pvarki.fi"
     # Remove the side-effect
-    MWConfig._singleton = None  # pylint: disable=W0212
+    MWConfig._singleton = None
 
 
 def test_sub_config_env(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -58,8 +58,8 @@ def test_sub_config_env(monkeypatch: pytest.MonkeyPatch) -> None:
         mpatch.setenv("MW_RASENMAEHER__USER_PORT", "4439")
         mpatch.setenv("MW_KEYTYPE", "rsa")
         cfg = MWConfig()  # type: ignore[call-arg]
-        LOGGER.debug("cfg={}".format(cfg))
-        assert cfg.rasenmaeher.api_port == 4439  # pylint: disable=E1101  # false positive
+        LOGGER.debug(f"cfg={cfg}")
+        assert cfg.rasenmaeher.api_port == 4439
         assert cfg.keytype is KeyType.RSA
 
 

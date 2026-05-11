@@ -1,10 +1,9 @@
 """Helpers"""
 
-import logging
 import asyncio
-from pathlib import Path
+import logging
 import subprocess  # nosec
-
+from pathlib import Path
 
 from .jwt import PRIVDIR_MODE
 
@@ -17,18 +16,18 @@ def certs_copy(copydir: Path, sourcedir: Path) -> None:
     copydir.chmod(PRIVDIR_MODE)
     for fpth in sourcedir.iterdir():
         if not fpth.name.endswith(".pem"):
-            LOGGER.debug("Skipping {}".format(fpth))
+            LOGGER.debug(f"Skipping {fpth}")
             continue
         absfpth = fpth.resolve(strict=True)
-        LOGGER.debug("{} resolved to {}".format(fpth, absfpth))
+        LOGGER.debug(f"{fpth} resolved to {absfpth}")
         tgtpth = copydir / fpth.name
         tgtpth.write_bytes(absfpth.read_bytes())
-        LOGGER.info("Wrote {}".format(tgtpth))
+        LOGGER.info(f"Wrote {tgtpth}")
 
 
 async def call_cmd(cmd: str) -> int:
     """Do the boilerplate for calling cmd and reporting output/return code"""
-    LOGGER.debug("Calling create_subprocess_shell(({})".format(cmd))
+    LOGGER.debug(f"Calling create_subprocess_shell(({cmd})")
     process = await asyncio.create_subprocess_shell(
         cmd,
         stdout=asyncio.subprocess.PIPE,
@@ -38,9 +37,9 @@ async def call_cmd(cmd: str) -> int:
     if err:
         LOGGER.warning(err)
     LOGGER.info(out)
-    assert isinstance(process.returncode, int)  # at this point it is, keep mypy happy
+    assert isinstance(process.returncode, int)  # nosec B101  # mypy hint; returncode is set after communicate()
     if process.returncode != 0:
-        LOGGER.error("{} returned nonzero code: {} (process: {})".format(cmd, process.returncode, process))
+        LOGGER.error(f"{cmd} returned nonzero code: {process.returncode} (process: {process})")
         LOGGER.error(err)
         LOGGER.error(out)
 

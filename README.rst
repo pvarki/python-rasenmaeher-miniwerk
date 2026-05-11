@@ -98,7 +98,7 @@ TLDR:
 - Ready to go.
 
 Remember to activate your virtualenv whenever working on the repo, this is needed
-because pylint and mypy pre-commit hooks use the "system" python for now (because reasons).
+because the mypy pre-commit hook uses the "system" python for now (because reasons).
 
 Versioning
 ----------
@@ -108,4 +108,3 @@ Versioning is handled with bump-my-version_. To increment, use ``bump-my-version
 You can use ``bump-my-version show-bump`` to see how each option would affect the version.
 
 .. _bump-my-version: https://github.com/callowayproject/bump-my-version
-
