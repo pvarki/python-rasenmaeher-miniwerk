@@ -1,6 +1,6 @@
 [project]
 name = "miniwerk"
-version = "1.7.1+260427"
+version = "1.8.0+260512"
 description = "Minimal KRAFTWERK amulation to be able to run a RASENMAEHER+products deployment on any VM"
 authors = [
     { name = "Eero af Heurlin", email = "eero.afheurlin@iki.fi" },
