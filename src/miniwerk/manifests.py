@@ -1,15 +1,15 @@
 """Handle manifests"""
 
-from typing import cast, List, Dict, Optional
-import logging
 import json
+import logging
 import uuid
 from pathlib import Path
+from typing import cast
 
 from libadvian.binpackers import uuid_to_b64
 
 from .config import MWConfig, ProductSettings
-from .jwt import get_issuer, PUBDIR_MODE, check_create_keypair
+from .jwt import PUBDIR_MODE, check_create_keypair, get_issuer
 
 LOGGER = logging.getLogger(__name__)
 
@@ -17,24 +17,24 @@ LOGGER = logging.getLogger(__name__)
 async def copy_jwt_pub(manifest_dir: Path) -> None:
     """Copy miniwerks JWT public key to the manifest dir"""
     _, mw_jwt_pub = await check_create_keypair()
-    LOGGER.debug("manifest_dir={}".format(manifest_dir))
+    LOGGER.debug(f"manifest_dir={manifest_dir}")
     pubkeypath = manifest_dir / "publickeys" / "kraftwerk.pub"
     pubdir = pubkeypath.parent
     pubdir.mkdir(parents=True, exist_ok=True)
     pubdir.chmod(PUBDIR_MODE)
-    LOGGER.debug("pubkeypath={}, exists: {}".format(pubkeypath, pubkeypath.exists()))
+    LOGGER.debug(f"pubkeypath={pubkeypath}, exists: {pubkeypath.exists()}")
     if pubkeypath.exists():
         return
     pubkeypath.write_bytes(mw_jwt_pub.read_bytes())
-    LOGGER.info("Wrote {}".format(pubkeypath))
+    LOGGER.info(f"Wrote {pubkeypath}")
 
 
-def get_product_config(productname: str) -> Optional[ProductSettings]:
+def get_product_config(productname: str) -> ProductSettings | None:
     """Get normalized product config"""
     config = MWConfig.singleton()
     product_config = getattr(config, productname, None)
     if not product_config:
-        LOGGER.error("No config for {}".format(productname))
+        LOGGER.error(f"No config for {productname}")
         return None
     product_config = cast(ProductSettings, product_config)
     if not product_config.api_host:
@@ -50,22 +50,22 @@ async def create_rasenmaeher_manifest() -> Path:
     manifest_path = config.manifests_base / "rasenmaeher" / "kraftwerk-rasenmaeher-init.json"
     manifest_dir = manifest_path.parent
     manifest_dir.mkdir(parents=True, exist_ok=True)
-    LOGGER.debug("manifest_dir={}".format(manifest_dir))
+    LOGGER.debug(f"manifest_dir={manifest_dir}")
     await copy_jwt_pub(manifest_dir)
 
     if manifest_path.exists():
-        LOGGER.info("{} already exists, not overwriting".format(manifest_path))
+        LOGGER.info(f"{manifest_path} already exists, not overwriting")
         return manifest_path
 
     manifest = {
         "dns": config.domain,
         "deployment": config.domain.split(".")[0],
-        "products": cast(Dict[str, Dict[str, str]], {}),
+        "products": cast(dict[str, dict[str, str]], {}),
     }
-    for productname in config.product_manifest_paths.keys():
+    for productname in config.product_manifest_paths:
         product_config = get_product_config(productname)
         if not product_config:
-            LOGGER.error("No config for {}".format(productname))
+            LOGGER.error(f"No config for {productname}")
             continue
         apihost = product_config.api_host
         userhost = product_config.user_host
@@ -75,7 +75,7 @@ async def create_rasenmaeher_manifest() -> Path:
             "certcn": f"{productname}.{config.domain}",
         }
     manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
-    LOGGER.info("Wrote {}".format(manifest_path))
+    LOGGER.info(f"Wrote {manifest_path}")
     return manifest_path
 
 
@@ -85,11 +85,11 @@ async def create_product_manifest(productname: str) -> Path:
     manifest_path = config.manifests_base / productname / "kraftwerk-init.json"
     manifest_dir = manifest_path.parent
     manifest_dir.mkdir(parents=True, exist_ok=True)
-    LOGGER.debug("manifest_dir={}".format(manifest_dir))
+    LOGGER.debug(f"manifest_dir={manifest_dir}")
     await copy_jwt_pub(manifest_dir)
 
     if manifest_path.exists():
-        LOGGER.info("{} already exists, not overwriting".format(manifest_path))
+        LOGGER.info(f"{manifest_path} already exists, not overwriting")
         return manifest_path
 
     issuer = await get_issuer()
@@ -102,14 +102,11 @@ async def create_product_manifest(productname: str) -> Path:
         }
     )
     rm_port = config.rasenmaeher.api_port
-    if rm_port != 443:
-        rm_uri = f"https://{config.domain}:{rm_port}/"
-    else:
-        rm_uri = f"https://{config.domain}/"
+    rm_uri = f"https://{config.domain}:{rm_port}/" if rm_port != 443 else f"https://{config.domain}/"
     mtls_uri = rm_uri.replace("https://", "https://mtls.")
     product_config = get_product_config(productname)
     if not product_config:
-        LOGGER.error("No config for {}".format(productname))
+        LOGGER.error(f"No config for {productname}")
         return manifest_path
     apihost = product_config.api_host
     userhost = product_config.user_host
@@ -127,18 +124,18 @@ async def create_product_manifest(productname: str) -> Path:
         },
     }
     manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
-    LOGGER.info("Wrote {}".format(manifest_path))
+    LOGGER.info(f"Wrote {manifest_path}")
     return manifest_path
 
 
-async def create_all_product_manifests() -> List[Path]:
+async def create_all_product_manifests() -> list[Path]:
     """Handle all products"""
     config = MWConfig.singleton()
     ret = []
-    for productname in config.product_manifest_paths.keys():
+    for productname in config.product_manifest_paths:
         product_config = getattr(config, productname, None)
         if not product_config:
-            LOGGER.error("No config for {}".format(productname))
+            LOGGER.error(f"No config for {productname}")
             continue
         ret.append(await create_product_manifest(productname))
     return ret

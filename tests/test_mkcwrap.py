@@ -1,19 +1,18 @@
 """Test mkcert wrapper"""
 
-from typing import List
 import logging
 
 import pytest
 
-from miniwerk.mkcwrap import call_mkcert
 from miniwerk.config import MWConfig
+from miniwerk.mkcwrap import call_mkcert
 
 LOGGER = logging.getLogger(__name__)
 
 
-def check_common_args(args: List[str], config: MWConfig) -> None:
+def check_common_args(args: list[str], config: MWConfig) -> None:
     """Common checks"""
-    LOGGER.debug("args={}".format(args))
+    LOGGER.debug(f"args={args}")
     assert " ".join(config.fqdns) in args
 
 
@@ -21,7 +20,7 @@ def check_common_args(args: List[str], config: MWConfig) -> None:
 async def test_default_config() -> None:
     """Test with default config"""
     config = MWConfig()  # type: ignore[call-arg]
-    LOGGER.debug("config={}".format(config))
+    LOGGER.debug(f"config={config}")
     assert config.ci is True
     _, args = await call_mkcert(config)
     check_common_args(args, config)
@@ -34,7 +33,7 @@ async def test_rsa_config(monkeypatch: pytest.MonkeyPatch) -> None:
     with monkeypatch.context() as mpatch:
         mpatch.setenv("MW_KEYTYPE", "rsa")
         config = MWConfig()  # type: ignore[call-arg]
-        LOGGER.debug("config={}".format(config))
+        LOGGER.debug(f"config={config}")
         assert config.ci is True
         _, args = await call_mkcert(config)
         check_common_args(args, config)

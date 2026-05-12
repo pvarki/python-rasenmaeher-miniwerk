@@ -1,14 +1,12 @@
 """JWT wrappers"""
 
-from typing import Tuple
 import asyncio
 import logging
-from pathlib import Path
 import stat
+from pathlib import Path
 
-
-from multikeyjwt.keygen import generate_keypair
 from multikeyjwt import Issuer, Verifier
+from multikeyjwt.keygen import generate_keypair
 
 from .config import MWConfig
 
@@ -17,7 +15,7 @@ PUBDIR_MODE = stat.S_IRWXU | stat.S_IRGRP | stat.S_IROTH | stat.S_IXGRP | stat.S
 PRIVDIR_MODE = stat.S_IRWXU
 
 
-async def check_create_keypair() -> Tuple[Path, Path]:
+async def check_create_keypair() -> tuple[Path, Path]:
     """Check if we have keypair, if not create it, returns the file paths"""
     config = MWConfig.singleton()
     privkeypath = config.data_path / "private" / "jwt.key"
@@ -35,7 +33,7 @@ async def check_create_keypair() -> Tuple[Path, Path]:
     LOGGER.info("Generating keypair, this will take a moment")
     _, cpk = await asyncio.get_event_loop().run_in_executor(None, generate_keypair, privkeypath, None)
     pubkeypath.write_bytes(cpk.read_bytes())
-    LOGGER.info("Wrote {}".format(pubkeypath))
+    LOGGER.info(f"Wrote {pubkeypath}")
 
     return privkeypath, pubkeypath
 
