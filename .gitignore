@@ -5,6 +5,10 @@
 pytest*.xml
 devdata
 
+# tooling caches
+.prettier_cache
+.ruff_cache
+
 # env definitions
 *env*.sh
 

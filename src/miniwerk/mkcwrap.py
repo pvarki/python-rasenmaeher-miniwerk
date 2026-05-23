@@ -1,21 +1,20 @@
 """Wrap mkcert calls"""
 
-from typing import List, Tuple
 import logging
 from pathlib import Path
 
-from .config import MWConfig, KeyType
-from .helpers import certs_copy, call_cmd, mkcert_ca_cert
+from .config import KeyType, MWConfig
+from .helpers import call_cmd, certs_copy, mkcert_ca_cert
 from .jwt import PRIVDIR_MODE
 
 LOGGER = logging.getLogger(__name__)
 
 
-async def call_mkcert(config: MWConfig) -> Tuple[int, List[str]]:
+async def call_mkcert(config: MWConfig) -> tuple[int, list[str]]:
     """Construct Cermkcerttbot command and call the entrypoint, returns the args for easier unit testing"""
     config.mk_cert_dir.mkdir(parents=True, exist_ok=True)
     config.mk_cert_dir.chmod(PRIVDIR_MODE)
-    args: List[str] = [
+    args: list[str] = [
         "--cert-file",
         str(config.mk_cert_dir / "cert.pem"),
         "--key-file",
@@ -50,5 +49,5 @@ async def get_mk_certs() -> Path:
     pubdir.mkdir(parents=True, exist_ok=True)
     capath = pubdir / "miniwerk_ca.pem"
     capath.write_bytes(mkcert_ca_cert().read_bytes())
-    LOGGER.info("Wrote {}".format(capath))
+    LOGGER.info(f"Wrote {capath}")
     return copydir

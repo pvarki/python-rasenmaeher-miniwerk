@@ -1,7 +1,7 @@
 """Test manifest creation"""
 
-import logging
 import json
+import logging
 from pathlib import Path
 
 import pytest
@@ -26,7 +26,7 @@ async def test_rm_manifest() -> None:
     pth = await create_rasenmaeher_manifest()
     check_jwt_pubkey(pth)
     manifest = json.loads(pth.read_text(encoding="utf-8"))
-    LOGGER.debug("manifest={}".format(manifest))
+    LOGGER.debug(f"manifest={manifest}")
     assert manifest["dns"] == config.domain
     assert "fake" in manifest["products"]
     assert "tak" in manifest["products"]
@@ -38,13 +38,13 @@ async def test_rm_manifest() -> None:
 async def test_fakeproduct_manifest() -> None:
     """Check fakeproduct manifest"""
     config = MWConfig.singleton()
-    pth = [cand for cand in await create_all_product_manifests() if "/fake/" in str(cand)][0]
+    pth = next(cand for cand in await create_all_product_manifests() if "/fake/" in str(cand))
     check_jwt_pubkey(pth)
     manifest = json.loads(pth.read_text(encoding="utf-8"))
-    LOGGER.debug("manifest={}".format(manifest))
+    LOGGER.debug(f"manifest={manifest}")
     verifier = await get_verifier()
     claims = verifier.decode(manifest["rasenmaeher"]["init"]["csr_jwt"])
-    LOGGER.debug("claims={}".format(claims))
+    LOGGER.debug(f"claims={claims}")
     assert claims["csr"]
     assert claims["nonce"]
     assert f"mtls.{config.domain}" in manifest["rasenmaeher"]["mtls"]["base_uri"]

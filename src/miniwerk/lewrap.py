@@ -1,18 +1,17 @@
 """Wrap letsencrypt"""
 
-from typing import List, Tuple
 import logging
 from pathlib import Path
 
 from .config import MWConfig
-from .helpers import certs_copy, call_cmd
+from .helpers import call_cmd, certs_copy
 
 LOGGER = logging.getLogger(__name__)
 
 
-async def call_certbot(config: MWConfig) -> Tuple[int, List[str]]:
+async def call_certbot(config: MWConfig) -> tuple[int, list[str]]:
     """Construct Certbot command and call the entrypoint, returns the args for easier unit testing"""
-    args: List[str] = [
+    args: list[str] = [
         "certonly",
         "--key-type",
         config.keytype.value,

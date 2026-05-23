@@ -1,19 +1,17 @@
 """pytest automagics"""
 
-from typing import Generator
 import logging
+from collections.abc import Generator
 from pathlib import Path
 
 import pytest
 from libadvian.logging import init_logging
-from libadvian.testhelpers import nice_tmpdir_ses, monkeysession  # pylint: disable=W0611
-
+from libadvian.testhelpers import monkeysession, nice_tmpdir_ses  # noqa: F401  # pytest fixtures
 
 init_logging(logging.DEBUG)
 LOGGER = logging.getLogger(__name__)
 
 
-# pylint: disable=W0621
 @pytest.fixture(autouse=True, scope="session")
 def default_env(monkeysession: pytest.MonkeyPatch, nice_tmpdir_ses: str) -> Generator[None, None, None]:
     """Setup some default environment variables"""

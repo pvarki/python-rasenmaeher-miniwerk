@@ -1,8 +1,8 @@
 """CLI entrypoints for miniwerk"""
 
-from typing import Any
-import logging
 import asyncio
+import logging
+from typing import Any
 
 import click
 from libadvian.logging import init_logging
@@ -10,8 +10,8 @@ from libadvian.logging import init_logging
 from miniwerk import __version__
 from miniwerk.config import MWConfig
 from miniwerk.lewrap import get_le_certs
+from miniwerk.manifests import create_all_product_manifests, create_rasenmaeher_manifest
 from miniwerk.mkcwrap import get_mk_certs
-from miniwerk.manifests import create_rasenmaeher_manifest, create_all_product_manifests
 
 LOGGER = logging.getLogger(__name__)
 
@@ -93,4 +93,4 @@ def do_full_init(ctx: Any) -> None:
 def miniwerk_cli() -> None:
     """cli entrypoint"""
     init_logging(logging.WARNING)
-    cligrp()  # pylint: disable=no-value-for-parameter
+    cligrp()

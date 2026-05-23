@@ -1,6 +1,7 @@
 # AGENTS.md — python-miniwerk
 
 ## Purpose
+
 Minimal KRAFTWERK emulation for the Deploy App (RASENMAEHER) stack. miniwerk is the very
 first service to start in the compose stack. It orchestrates TLS certificate provisioning
 (Let's Encrypt in production, mkcert locally) and writes a per-product JSON manifest to
@@ -8,15 +9,17 @@ shared Docker volumes so every downstream service knows its domain, certificates
 Nothing else can start until miniwerk is healthy.
 
 ## Stack & Key Technologies
+
 - **Language:** Python 3.11
 - **Framework:** Custom async (aiohttp-based)
 - **Key libs:** libpvarki, cryptography, certbot / mkcert
 - **Testing:** pytest, tox (65% minimum coverage)
-- **Linting:** pre-commit, pylint
+- **Linting:** prek (drop-in pre-commit replacement), ruff, mypy, bandit
 - **Container:** Docker multi-target (devel_shell, tox, production)
 - **Port:** 80 (internal cert delivery)
 
 ## Development Setup
+
 ```bash
 export DOCKER_BUILDKIT=1
 # Linux:
@@ -37,6 +40,7 @@ docker start -i miniwerk_devel
 ```
 
 ## Running Tests
+
 ```bash
 # Via tox (CI)
 docker build --ssh default --target tox -t miniwerk:tox .
@@ -45,16 +49,18 @@ docker run --rm -it -v $(pwd):/app $(echo $DOCKER_SSHAGENT) miniwerk:tox
 # Direct pytest inside devel_shell
 pytest tests/ -v --cov=miniwerk --cov-fail-under=65
 
-# Pre-commit
-pre-commit install --install-hooks
-pre-commit run --all-files
+# Pre-commit hooks (run via prek)
+prek install --install-hooks
+prek run --all-files
 ```
 
 ## Code Conventions
+
 - Async-first: use `aiohttp` / `asyncio`, not `requests`
-- Follow pylint rules from root `pylintrc`
+- Follow ruff rules configured in `pyproject.toml` (`[tool.ruff]`)
 
 ## Architecture Notes
+
 **`src/miniwerk/config.py`** defines the
 `MWConfig` settings model (read from `MW_*` env vars) and the per-product
 `ProductSettings` defaults which products exist, which subdomains they own,
@@ -67,6 +73,7 @@ defined there.
 service starts. The compose health-check dependency chain enforces this.
 
 **Certificate modes:**
+
 - `MW_MKCERT=true` — Fully local; uses mkcert to generate self-signed certs. No DNS required.
   Used for unit/integration testing.
 - `MW_LE_TEST=true` — Let's Encrypt staging. Requires real DNS but uses LE test CA (untrusted).
@@ -76,11 +83,13 @@ service starts. The compose health-check dependency chain enforces this.
 
 **Kraftwerk manifest pattern:** For each product in `MW_PRODUCTS`, miniwerk writes a JSON file
 to `/pvarki/kraftwerk-rasenmaeher-init.json` inside the product's shared volume. The format:
+
 ```json
-{"dns": "product.yourdomain.fi", "products": {"tak": "tak.yourdomain.fi"}}
+{ "dns": "product.yourdomain.fi", "products": { "tak": "tak.yourdomain.fi" } }
 ```
 
 **Certificate outputs:**
+
 - Let's Encrypt certs → `le_certs:/le_certs` Docker volume
 - CA public cert → `ca_public:/ca_public/ca_chain.pem` (read by all services)
 
@@ -88,6 +97,7 @@ to `/pvarki/kraftwerk-rasenmaeher-init.json` inside the product's shared volume.
 `mtx.domain`, `matrix.domain`, `mtls.domain`, and all `mtls.*` variants.
 
 ## Adding a New Product Integration
+
 The set of changes is small but every step matters — skipping any of them will
 break either tests, manifest generation, or TLS provisioning. Throughout this
 section, replace `<new-product-name-here>` with the short-name of the product
@@ -95,6 +105,7 @@ you're adding (lowercase, no dots, matches what the rest of the stack will use
 as the subdomain prefix e.g. `tak`, `bl`, `mtx`).
 
 ### 1. Register the product in `src/miniwerk/config.py`
+
 - Append the short-name to the comma-separated `products` default. This string
   is the source of truth for which manifests get generated and which FQDNs get
   certificates. Pattern: `"fake,tak,bl,mtx,<new-product-name-here>"`.
@@ -121,27 +132,34 @@ as the subdomain prefix e.g. `tak`, `bl`, `mtx`).
   and adding it manually will produce duplicate manifests.
 
 ### 2. Update `tests/test_config.py`
+
 The FQDN test enumerates the exact set of hostnames miniwerk will request
 certificates for. Add **both** the base FQDN and its `mtls.` variant for the
 new product:
+
 ```
 <new-product-name-here>.pytest.pvarki.fi
 mtls.<new-product-name-here>.pytest.pvarki.fi
 ```
+
 Also extend the expected `products` string in any test that asserts on the
 default products list. If you skip this, the test fails noisily — which is the
 correct behavior. Don't "fix" it by trimming the product back out.
 
 ### 3. Bump the version
+
 Use bumpversion so all four locations stay in sync:
+
 ```bash
 bumpversion patch    # or minor, if the integration is user-visible
 ```
+
 This updates `.bumpversion.cfg`, `pyproject.toml`, `src/miniwerk/__init__.py`,
 and `tests/test_miniwerk.py` together. Editing them by hand is a known source
 of CI failures — let the tool do it.
 
 ### 4. Verify before opening a PR
+
 Run the test suite (see the **Running Tests** section above) and confirm the
 FQDN test in `tests/test_config.py` passes with the new product's base and
 `mtls.` hostnames in the expected set. The FQDN test is the early warning that
@@ -149,7 +167,9 @@ something is off - if it passes, cert provisioning and manifest generation will
 line up too.
 
 ### 5. Downstream consequences (no action in miniwerk, but plan ahead)
+
 Adding a product here means the product's own service must:
+
 - Be reachable at `<new-product-name-here>.<MW_DOMAIN>` and
   `mtls.<new-product-name-here>.<MW_DOMAIN>` (DNS records must exist before LE
   provisioning runs in production).
@@ -161,6 +181,7 @@ The compose file in
 is where those wiring changes land, not in miniwerk itself.
 
 ## Common Agent Pitfalls
+
 1. **miniwerk MUST complete before anything else.** If you see other services crashing on
    startup with cert or manifest errors, wait for miniwerk to reach a healthy state first.
    Do not remove or weaken the health-check dependency in the compose file.
@@ -175,6 +196,7 @@ is where those wiring changes land, not in miniwerk itself.
    `/run/host-services/ssh-auth.sock` on macOS vs `$SSH_AUTH_SOCK` on Linux.
 
 ## Related Repos
+
 - https://github.com/pvarki/docker-rasenmaeher-integration (orchestration root)
 - https://github.com/pvarki/python-pvarki-cfssl (consumes the CA certs miniwerk prepares)
 - https://github.com/pvarki/python-rasenmaeher-api (reads the kraftwerk manifest)

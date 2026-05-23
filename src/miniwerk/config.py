@@ -1,9 +1,10 @@
 """Configuration"""
 
 from __future__ import annotations
-from typing import ClassVar, Optional, List, Dict
-from pathlib import Path
+
 from enum import StrEnum
+from pathlib import Path
+from typing import ClassVar
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -67,8 +68,8 @@ class MWConfig(BaseSettings):
 
     le_cert_name: str = Field(default="rasenmaeher", description="--cert-name for LE, used to determine directory name")
     # FIXME: how to cast the Fields to correct types
-    le_copy_path: Path = Field(default="/le_certs", description="Where to copy letsencrypt certs and keys")  # type: ignore[assignment] # pylint: disable=C0301
-    data_path: Path = Field(default="/data/persistent", description="Where do we keep our data")  # type: ignore[assignment] # pylint: disable=C0301
+    le_copy_path: Path = Field(default="/le_certs", description="Where to copy letsencrypt certs and keys")  # type: ignore[assignment]
+    data_path: Path = Field(default="/data/persistent", description="Where do we keep our data")  # type: ignore[assignment]
     manifests_base: Path = Field(  # type: ignore[assignment]
         default="/pvarkishares", description="Path for manifests etc, each product gets a subdir"
     )
@@ -76,9 +77,9 @@ class MWConfig(BaseSettings):
     extcert: bool = Field(default=False, description="Do not use certbot or mkcert, something else handles certs")
     mkcert: bool = Field(default=False, description="Use mkcert instead of certbot")
     ci: bool = Field(default=False, alias="CI", description="Are we running in CI")
-    keytype: KeyType = Field(default="ecdsa", description="Which key types to use, rsa or ecdsa (default)")  # type: ignore[assignment] # pylint: disable=C0301
+    keytype: KeyType = Field(default="ecdsa", description="Which key types to use, rsa or ecdsa (default)")  # type: ignore[assignment]
     model_config = SettingsConfigDict(env_prefix="mw_", env_file=".env", extra="ignore", env_nested_delimiter="__")
-    _singleton: ClassVar[Optional[MWConfig]] = None
+    _singleton: ClassVar[MWConfig | None] = None
 
     @classmethod
     def singleton(cls) -> MWConfig:
@@ -113,16 +114,16 @@ class MWConfig(BaseSettings):
         return self.mkcert_path / self.le_cert_name
 
     @property
-    def fqdns(self) -> List[str]:
+    def fqdns(self) -> list[str]:
         """Main domain and all subdomains and FQDNs"""
         ret = [f"{subd.strip()}.{self.domain}" for subd in str(self.subdomains).split(",")]
-        for proddomain in [f"{prod.strip()}.{self.domain}" for prod in (str(self.products).split(",") + ["kc"])]:
+        for proddomain in [f"{prod.strip()}.{self.domain}" for prod in [*str(self.products).split(","), "kc"]]:
             ret.append(proddomain)
             ret += [f"{subd.strip()}.{proddomain}" for subd in str(self.subdomains).split(",")]
         ret.append(self.domain)
         return ret
 
     @property
-    def product_manifest_paths(self) -> Dict[str, Path]:
+    def product_manifest_paths(self) -> dict[str, Path]:
         """Paths for product manifests keyed by product"""
         return {prod.strip(): self.manifests_base / prod.strip() for prod in str(self.products).split(",")}
