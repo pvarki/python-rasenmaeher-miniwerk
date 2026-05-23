@@ -52,7 +52,7 @@ def do_certs(ctx: Any) -> None:
             await get_le_certs()
         return 0
 
-    ctx.exit(asyncio.get_event_loop().run_until_complete(call()))
+    ctx.exit(asyncio.run(call()))
 
 
 @cligrp.command(name="manifests")
@@ -66,7 +66,7 @@ def create_manifests(ctx: Any) -> None:
         await create_all_product_manifests()
         return 0
 
-    ctx.exit(asyncio.get_event_loop().run_until_complete(call()))
+    ctx.exit(asyncio.run(call()))
 
 
 @cligrp.command(name="init")
@@ -87,7 +87,7 @@ def do_full_init(ctx: Any) -> None:
             await get_le_certs()
         return 0
 
-    ctx.exit(asyncio.get_event_loop().run_until_complete(call()))
+    ctx.exit(asyncio.run(call()))
 
 
 def miniwerk_cli() -> None:
