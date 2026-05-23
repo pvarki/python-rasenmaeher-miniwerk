@@ -9,19 +9,18 @@ resolution-markers = [
 
 [[package]]
 name = "acme"
-version = "3.3.0"
+version = "5.6.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "cryptography" },
     { name = "josepy" },
     { name = "pyopenssl" },
     { name = "pyrfc3339" },
-    { name = "pytz" },
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c9/5b/731cd971fd8fbb543be9d6e2bcba71d2d5dd01d454cb7ad9b0953fd6d21b/acme-3.3.0.tar.gz", hash = "sha256:c026edc0db13a36fb80d802d2e0256525b52272543beca3b8ddf2264bd8ef1f8", size = 93342, upload-time = "2025-03-11T16:26:50.763Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e5/5e/df38c186bcb5c2fc4827fa373a5c93a55cc0d82842af670e23c1e61c7867/acme-5.6.0.tar.gz", hash = "sha256:23f706ef1c437fc743b2f90704b97f263a56d83198b3af1c25c7dd42c4b463e4", size = 90686, upload-time = "2026-05-11T17:06:21.104Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c1/2f/bf8e5b44c522f598324f934048d1db332bfbcace7ee5e8bf2f8a667644ea/acme-3.3.0-py3-none-any.whl", hash = "sha256:8e049964eafd89ebbf42ab8e3340222c6332a3cf62ceb2e30325b934d33b57b7", size = 97790, upload-time = "2025-03-11T16:26:27.823Z" },
+    { url = "https://files.pythonhosted.org/packages/ba/47/5eb27f6f065170380bd4bd782177a2f1f67e721d6b3fa7de18c492f52917/acme-5.6.0-py3-none-any.whl", hash = "sha256:fbf7ee8880485f2339942a2eff9a87deb79b74a8dcac4a572c08e7e640f046cd", size = 95023, upload-time = "2026-05-11T17:06:01.31Z" },
 ]
 
 [[package]]
@@ -285,7 +284,7 @@ wheels = [
 
 [[package]]
 name = "certbot"
-version = "2.11.1"
+version = "5.6.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "acme" },
@@ -296,13 +295,11 @@ dependencies = [
     { name = "josepy" },
     { name = "parsedatetime" },
     { name = "pyrfc3339" },
-    { name = "pytz" },
     { name = "pywin32", marker = "sys_platform == 'win32'" },
-    { name = "setuptools" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/84/b3/fdfc5d86dafc68210b9ca4875a3f06958943fa86b60c21a097e301682a92/certbot-2.11.1.tar.gz", hash = "sha256:bcf328481d4411c31f34a0fa4fa4aeb3359a41a5a0ffa11fa0ce187d3868aa12", size = 438557, upload-time = "2025-02-26T00:42:38.96Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/4b/c0/838942a6c5fb07e42fdf48a5cc306214fd118c98dae673f1fb0b2d1f88ef/certbot-5.6.0.tar.gz", hash = "sha256:89052854e28cd2fcac72a8857aad6dfc6b02ba992f4b8f255062fe29c8aed3ee", size = 704257, upload-time = "2026-05-11T17:06:34.168Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/cb/7a/97177566cfa7fddc31b0ddba8037b2a8aabeb44b02632b9cdaee5686a0f2/certbot-2.11.1-py3-none-any.whl", hash = "sha256:5b9472fca91d95a5000aaaf85fe539a7e5fd50e9fb3c27c472311b876d7f1f97", size = 407350, upload-time = "2025-02-26T00:42:07.764Z" },
+    { url = "https://files.pythonhosted.org/packages/50/41/a951ebc2559dee911cd61722e869764eb69ff251857592c041c1cff29ad0/certbot-5.6.0-py3-none-any.whl", hash = "sha256:81ea876500ba60022a98a3e92fe4230088c7792b9d375357bb23c58741d2b0da", size = 780207, upload-time = "2026-05-11T17:06:19.52Z" },
 ]
 
 [[package]]
@@ -859,15 +856,14 @@ wheels = [
 
 [[package]]
 name = "josepy"
-version = "1.15.0"
+version = "2.2.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "cryptography" },
-    { name = "pyopenssl" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c1/8a/cd416f56cd4492878e8d62701b4ad32407c5ce541f247abf31d6e5f3b79b/josepy-1.15.0.tar.gz", hash = "sha256:46c9b13d1a5104ffbfa5853e555805c915dcde71c2cd91ce5386e84211281223", size = 59310, upload-time = "2025-01-22T23:56:23.577Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/7f/ad/6f520aee9cc9618d33430380741e9ef859b2c560b1e7915e755c084f6bc0/josepy-2.2.0.tar.gz", hash = "sha256:74c033151337c854f83efe5305a291686cef723b4b970c43cfe7270cf4a677a9", size = 56500, upload-time = "2025-10-14T14:54:42.108Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/5f/74/fc54f4b03cb66b0b351131fcf1797fe9d7c1e6ce9a38fd940d9bc2d9531b/josepy-1.15.0-py3-none-any.whl", hash = "sha256:878c08cedd0a892c98c6d1a90b3cb869736f9c751f68ec8901e7b05a0c040fed", size = 32774, upload-time = "2025-01-22T23:56:21.524Z" },
+    { url = "https://files.pythonhosted.org/packages/f8/b2/b5caed897fbb1cc286c62c01feca977e08d99a17230ff3055b9a98eccf1d/josepy-2.2.0-py3-none-any.whl", hash = "sha256:63e9dd116d4078778c25ca88f880cc5d95f1cab0099bebe3a34c2e299f65d10b", size = 29211, upload-time = "2025-10-14T14:54:41.144Z" },
 ]
 
 [[package]]
@@ -1008,7 +1004,7 @@ requires-dist = [
     { name = "aiohttp", specifier = ">=3.8,<4" },
     { name = "brotli", specifier = ">=1.0,<2" },
     { name = "cchardet", marker = "python_full_version < '3.11'", specifier = ">=2.1,<3" },
-    { name = "certbot", specifier = ">=2.6,<3" },
+    { name = "certbot", specifier = ">=5.6,<6" },
     { name = "click", specifier = ">=8.0,<9" },
     { name = "libadvian", specifier = ">=1.4,<2" },
     { name = "multikeyjwt", specifier = ">=1.2,<2" },
@@ -1787,15 +1783,6 @@ wheels = [
 ]
 
 [[package]]
-name = "pytz"
-version = "2026.2"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/ff/46/dd499ec9038423421951e4fad73051febaa13d2df82b4064f87af8b8c0c3/pytz-2026.2.tar.gz", hash = "sha256:0e60b47b29f21574376f218fe21abc009894a2321ea16c6754f3cad6eb7cdd6a", size = 320861, upload-time = "2026-05-04T01:35:29.667Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/ec/dd/96da98f892250475bdf2328112d7468abdd4acc7b902b6af23f4ed958ea0/pytz-2026.2-py2.py3-none-any.whl", hash = "sha256:04156e608bee23d3792fd45c94ae47fae1036688e75032eea2e3bf0323d1f126", size = 510141, upload-time = "2026-05-04T01:35:27.408Z" },
-]
-
-[[package]]
 name = "pywin32"
 version = "311"
 source = { registry = "https://pypi.org/simple" }
@@ -1946,15 +1933,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/36/38/012bf76752e1f89ed50b77b99532d90f3a3e287bc7918e1fc0948ac866ac/ruff-0.15.14-py3-none-win32.whl", hash = "sha256:6d0c1ad2a0ab718d39b6d8fd2217981ce4d625cd96a720095f798fb47d8b13e6", size = 10805548, upload-time = "2026-05-21T14:34:33.453Z" },
     { url = "https://files.pythonhosted.org/packages/d1/b7/4ea2c170f10ad760fff2a5250beb18897719dc8b52b53a24cddbb9dd3f19/ruff-0.15.14-py3-none-win_amd64.whl", hash = "sha256:802342981e056db3851a7836e5b070f8f15f67d4a685ae2a6160939d364b2902", size = 11939523, upload-time = "2026-05-21T14:34:18.077Z" },
     { url = "https://files.pythonhosted.org/packages/62/d5/bc97ff895ec35cf3925d4bd60f3b39d822f377a446906ec9bcc87405e59b/ruff-0.15.14-py3-none-win_arm64.whl", hash = "sha256:ff47b90a9ef6a40c9e2f3b479c1fb78531adf055b94c1eba0a7ba04b31951826", size = 11208607, upload-time = "2026-05-21T14:34:26.525Z" },
-]
-
-[[package]]
-name = "setuptools"
-version = "82.0.1"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/4f/db/cfac1baf10650ab4d1c111714410d2fbb77ac5a616db26775db562c8fab2/setuptools-82.0.1.tar.gz", hash = "sha256:7d872682c5d01cfde07da7bccc7b65469d3dca203318515ada1de5eda35efbf9", size = 1152316, upload-time = "2026-03-09T12:47:17.221Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/9d/76/f789f7a86709c6b087c5a2f52f911838cad707cc613162401badc665acfe/setuptools-82.0.1-py3-none-any.whl", hash = "sha256:a59e362652f08dcd477c78bb6e7bd9d80a7995bc73ce773050228a348ce2e5bb", size = 1006223, upload-time = "2026-03-09T12:47:15.026Z" },
 ]
 
 [[package]]
