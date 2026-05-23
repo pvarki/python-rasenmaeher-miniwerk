@@ -19,7 +19,7 @@ RUN export RESOLVED_VERSIONS=`pyenv_resolve $PYTHON_VERSIONS` \
 ######################
 # Base builder image #
 ######################
-FROM python:3.11-bookworm AS builder_base
+FROM python:3.14-trixie AS builder_base
 COPY --from=ghcr.io/astral-sh/uv:0.11.6 /uv /uvx /usr/local/bin/
 
 ENV \
@@ -62,12 +62,12 @@ SHELL ["/bin/bash", "-lc"]
 # Copy only requirements, to cache them in docker layer:
 WORKDIR /pysetup
 COPY ./uv.lock ./pyproject.toml ./README.rst /pysetup/
-# Install runtime dependencies into /.venv (without the project itself)
+# Cache and install runtime deps into the project venv (without installing the project itself yet)
 RUN --mount=type=ssh uv venv /.venv \
     && echo 'source /.venv/bin/activate' >>/root/.profile \
-    && uv sync --frozen --no-install-project --no-dev \
+    && uv export --frozen --no-dev --format requirements.txt --no-hashes --output-file  /tmp/requirements.txt \
+    && pip3 wheel --extra-index-url https://nexus.dev.pvarki.fi/repository/python/simple --wheel-dir=/tmp/wheelhouse -r /tmp/requirements.txt \
     && true
-
 
 ####################################
 # Base stage for production builds #
@@ -79,6 +79,7 @@ COPY ./docker/entrypoint.sh /docker-entrypoint.sh
 COPY ./uv.lock ./pyproject.toml ./README.rst /app/
 COPY ./src /app/src/
 WORKDIR /app
+COPY --from=builder_base /tmp/wheelhouse /tmp/wheelhouse
 # Build the wheel package with uv
 RUN --mount=type=ssh source /.venv/bin/activate \
     && mkdir -p /tmp/wheelhouse \
@@ -90,7 +91,7 @@ RUN --mount=type=ssh source /.venv/bin/activate \
 #########################
 # Main production build #
 #########################
-FROM python:3.11-slim-bookworm AS production
+FROM python:3.14-slim-trixie AS production
 COPY --from=production_build /tmp/wheelhouse /tmp/wheelhouse
 COPY --from=production_build /docker-entrypoint.sh /docker-entrypoint.sh
 WORKDIR /app
