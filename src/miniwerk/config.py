@@ -39,7 +39,7 @@ class MWConfig(BaseSettings):
     le_test: bool = Field(default=True, description="Use LE staging/test env")
     subdomains: str = Field(default="mtls", description="Comma separated list of extra subdomains to get certs for")
     products: str = Field(
-        default="fake,tak,bl,mtx,matrix",
+        default="fake,tak,bl,mtx,matrix,takanalyzer",
         description="Comma separated list of products to create manifests and get subdomains for",
     )
     fake: ProductSettings = Field(
@@ -64,6 +64,12 @@ class MWConfig(BaseSettings):
     matrix: ProductSettings = Field(
         description="Setting for Matrix integration API",
         default_factory=lambda: ProductSettings(api_host="matrix", user_host="matrix", api_port=4626, user_port=4626),
+    )
+    takanalyzer: ProductSettings = Field(
+        description="Settings for the TAK-analyzer integration API",
+        default_factory=lambda: ProductSettings(
+            api_host="takanalyzer", user_host="takanalyzer", api_port=4626, user_port=4626
+        ),
     )
 
     le_cert_name: str = Field(default="rasenmaeher", description="--cert-name for LE, used to determine directory name")
