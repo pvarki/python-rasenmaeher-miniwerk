@@ -48,3 +48,21 @@ async def test_fakeproduct_manifest() -> None:
     assert claims["csr"]
     assert claims["nonce"]
     assert f"mtls.{config.domain}" in manifest["rasenmaeher"]["mtls"]["base_uri"]
+
+
+@pytest.mark.asyncio
+async def test_takanalyzer_manifest() -> None:
+    """Check takanalyzer gets an identity (CSR JWT) + manifest with takanalyzer hosts"""
+    config = MWConfig.singleton()
+    pth = next(cand for cand in await create_all_product_manifests() if "/takanalyzer/" in str(cand))
+    check_jwt_pubkey(pth)
+    manifest = json.loads(pth.read_text(encoding="utf-8"))
+    LOGGER.debug(f"manifest={manifest}")
+    verifier = await get_verifier()
+    claims = verifier.decode(manifest["rasenmaeher"]["init"]["csr_jwt"])
+    LOGGER.debug(f"claims={claims}")
+    assert claims["csr"]
+    assert claims["sub"] == f"takanalyzer.{config.domain}"
+    assert manifest["product"]["dns"] == f"takanalyzer.{config.domain}"
+    assert f"takanalyzer.{config.domain}" in manifest["product"]["api"]
+    assert f"takanalyzer.{config.domain}" in manifest["product"]["uri"]

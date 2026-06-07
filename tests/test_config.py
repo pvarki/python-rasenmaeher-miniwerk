@@ -16,7 +16,7 @@ def test_defaults() -> None:
     assert cfg.ci is True
     assert cfg.domain == "pytest.pvarki.fi"
     assert cfg.subdomains == "mtls"
-    assert cfg.products == "fake,tak,bl,mtx,matrix"
+    assert cfg.products == "fake,tak,bl,mtx,matrix,takanalyzer"
     assert str(cfg.data_path) != "/data/persistent"
     assert cfg.le_email == "example@example.com"
     LOGGER.debug(f"cfg.fqdns={cfg.fqdns}")
@@ -35,6 +35,8 @@ def test_defaults() -> None:
         "mtx.pytest.pvarki.fi",
         "mtls.matrix.pytest.pvarki.fi",
         "matrix.pytest.pvarki.fi",
+        "mtls.takanalyzer.pytest.pvarki.fi",
+        "takanalyzer.pytest.pvarki.fi",
     }
     assert cfg.keytype is KeyType.ECDSA
 
@@ -67,3 +69,23 @@ def test_kc_in_fqdns() -> None:
     """Test the singleton fetcher"""
     cfg = MWConfig.singleton()
     assert f"kc.{cfg.domain}" in cfg.fqdns
+
+
+def test_takanalyzer_defaults() -> None:
+    """takanalyzer product resolves with the expected hosts/ports by default"""
+    cfg = MWConfig()  # type: ignore[call-arg]
+    assert "takanalyzer" in cfg.products.split(",")
+    assert cfg.takanalyzer.api_host == "takanalyzer"
+    assert cfg.takanalyzer.user_host == "takanalyzer"
+    assert cfg.takanalyzer.api_port == 4626
+    assert cfg.takanalyzer.user_port == 4626
+
+
+def test_takanalyzer_env_override(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Platform MW_TAKANALYZER__* env overrides bind to the takanalyzer product settings"""
+    with monkeypatch.context() as mpatch:
+        mpatch.setenv("MW_TAKANALYZER__API_PORT", "443")
+        mpatch.setenv("MW_TAKANALYZER__USER_PORT", "443")
+        cfg = MWConfig()  # type: ignore[call-arg]
+        assert cfg.takanalyzer.api_port == 443
+        assert cfg.takanalyzer.user_port == 443
