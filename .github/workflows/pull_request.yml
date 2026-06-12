@@ -39,7 +39,7 @@ jobs:
         with:
           python-version: "3.11"
           uv-version: "0.11.6"
-      - uses: pvarki/config-ci-library/.github/actions/snyk-test@main
+      - uses: pvarki/config-ci-library/.github/actions/snyk-test@bc357c85661ad5b8d8c249fad4b88368e9a28e6c
         with:
           snyk-org: deployapp-core-services
           snyk-token: ${{ secrets.SNYK_TOKEN }}
