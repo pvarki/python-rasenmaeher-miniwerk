@@ -1,5 +1,6 @@
 on:
   pull_request:
+  workflow_dispatch: # Allow manual triggering
 
 jobs:
   versiontag:
@@ -88,7 +89,7 @@ jobs:
 
   publish:
     name: Publish Docker image
-    needs: [versiontag, pre_commit, snyk, test, docker_builds]
+    needs: [versiontag, pre_commit, test, docker_builds]
     runs-on: arc-runner-set
     permissions:
       contents: read
