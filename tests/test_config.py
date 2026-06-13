@@ -23,7 +23,7 @@ def test_defaults() -> None:
     assert cfg.cryptpad.api_host == "rmcryptpad"  # pylint: disable=E1101
     assert cfg.cryptpad.user_host == "mtls.cryptpad"  # pylint: disable=E1101
     assert cfg.cryptpad.user_port == 4626  # pylint: disable=E1101
-    LOGGER.debug("cfg.fqdns={}".format(cfg.fqdns))
+    LOGGER.debug(f"cfg.fqdns={cfg.fqdns}")
     assert set(cfg.fqdns) == {
         "mtls.tak.pytest.pvarki.fi",
         "tak.pytest.pvarki.fi",
@@ -71,7 +71,7 @@ def test_sub_config_env(monkeypatch: pytest.MonkeyPatch) -> None:
         mpatch.setenv("MW_CRYPTPAD__USER_PORT", "4632")
         mpatch.setenv("MW_KEYTYPE", "rsa")
         cfg = MWConfig()  # type: ignore[call-arg]
-        LOGGER.debug("cfg={}".format(cfg))
+        LOGGER.debug(f"cfg={cfg}")
         assert cfg.rasenmaeher.api_port == 4439  # pylint: disable=E1101  # false positive
         assert cfg.cryptpad.api_host == "api-cryptpad"  # pylint: disable=E1101
         assert cfg.cryptpad.api_port == 4631  # pylint: disable=E1101

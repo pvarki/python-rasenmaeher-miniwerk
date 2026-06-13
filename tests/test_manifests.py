@@ -58,10 +58,10 @@ async def test_fakeproduct_manifest() -> None:
 async def test_cryptpad_manifest() -> None:
     """Check cryptpad manifest"""
     config = MWConfig.singleton()
-    pth = [cand for cand in await create_all_product_manifests() if "/cryptpad/" in str(cand)][0]
+    pth = next([cand for cand in await create_all_product_manifests() if "/cryptpad/" in str(cand)])
     check_jwt_pubkey(pth)
     manifest = json.loads(pth.read_text(encoding="utf-8"))
-    LOGGER.debug("manifest={}".format(manifest))
+    LOGGER.debug(f"manifest={manifest}")
     assert manifest["product"]["dns"] == f"cryptpad.{config.domain}"
     assert manifest["product"]["api"] == f"https://rmcryptpad.{config.domain}:4626/"
     assert manifest["product"]["uri"] == f"https://mtls.cryptpad.{config.domain}:4626/"

@@ -127,7 +127,7 @@ class MWConfig(BaseSettings):
         """Main domain and all subdomains and FQDNs"""
         ret = [f"{subd.strip()}.{self.domain}" for subd in str(self.subdomains).split(",")]
         productnames = [prod.strip() for prod in str(self.products).split(",") if prod.strip()]
-        for proddomain in [f"{prod}.{self.domain}" for prod in (productnames + ["kc"])]:
+        for proddomain in [f"{prod}.{self.domain}" for prod in [*productnames, "kc"]]:
             ret.append(proddomain)
             ret += [f"{subd.strip()}.{proddomain}" for subd in str(self.subdomains).split(",")]
         if "cryptpad" in productnames:
