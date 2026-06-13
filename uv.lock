@@ -984,7 +984,7 @@ wheels = [
 
 [[package]]
 name = "miniwerk"
-version = "1.9.0+260613"
+version = "1.10.0+260613"
 source = { editable = "." }
 dependencies = [
     { name = "aiodns" },
