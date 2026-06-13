@@ -9,6 +9,7 @@ from typing import cast
 from libadvian.binpackers import uuid_to_b64
 
 from .config import MWConfig, ProductSettings
+from .hosts_helper import generate_hosts_bash_script, write_product_hosts_script
 from .jwt import PUBDIR_MODE, check_create_keypair, get_issuer
 
 LOGGER = logging.getLogger(__name__)
@@ -52,6 +53,11 @@ async def create_rasenmaeher_manifest() -> Path:
     manifest_dir.mkdir(parents=True, exist_ok=True)
     LOGGER.debug(f"manifest_dir={manifest_dir}")
     await copy_jwt_pub(manifest_dir)
+    # Write the hosts helper script
+    script_path = config.manifests_base / "rasenmaeher" / "hosts_script.sh"
+    script_path.write_text(generate_hosts_bash_script(), encoding="utf-8")
+    script_path.chmod(0o754)  # -rwxr-xr--
+    LOGGER.info(f"Wrote {script_path}")
 
     if manifest_path.exists():
         LOGGER.info(f"{manifest_path} already exists, not overwriting")
@@ -138,4 +144,5 @@ async def create_all_product_manifests() -> list[Path]:
             LOGGER.error(f"No config for {productname}")
             continue
         ret.append(await create_product_manifest(productname))
+        write_product_hosts_script(productname)
     return ret

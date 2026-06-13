@@ -24,6 +24,8 @@ async def test_rm_manifest() -> None:
     """Check RASENMAEHER manifest creation"""
     config = MWConfig.singleton()
     pth = await create_rasenmaeher_manifest()
+    script_path = pth.parent / "hosts_script.sh"
+    assert script_path.exists()
     check_jwt_pubkey(pth)
     manifest = json.loads(pth.read_text(encoding="utf-8"))
     LOGGER.debug(f"manifest={manifest}")
@@ -43,6 +45,8 @@ async def test_fakeproduct_manifest() -> None:
     """Check fakeproduct manifest"""
     config = MWConfig.singleton()
     pth = [cand for cand in await create_all_product_manifests() if "/fake/" in str(cand)][0]  # noqa: RUF015
+    script_path = pth.parent / "hosts_script.sh"
+    assert script_path.exists()
     check_jwt_pubkey(pth)
     manifest = json.loads(pth.read_text(encoding="utf-8"))
     LOGGER.debug(f"manifest={manifest}")
@@ -59,6 +63,8 @@ async def test_cryptpad_manifest() -> None:
     """Check cryptpad manifest"""
     config = MWConfig.singleton()
     pth = [cand for cand in await create_all_product_manifests() if "/cryptpad/" in str(cand)][0]  # noqa: RUF015
+    script_path = pth.parent / "hosts_script.sh"
+    assert script_path.exists()
     check_jwt_pubkey(pth)
     manifest = json.loads(pth.read_text(encoding="utf-8"))
     LOGGER.debug(f"manifest={manifest}")
