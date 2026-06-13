@@ -42,7 +42,7 @@ async def test_rm_manifest() -> None:
 async def test_fakeproduct_manifest() -> None:
     """Check fakeproduct manifest"""
     config = MWConfig.singleton()
-    pth = next(cand for cand in await create_all_product_manifests() if "/fake/" in str(cand))
+    pth = [cand for cand in await create_all_product_manifests() if "/fake/" in str(cand)][0]  # noqa: RUF015
     check_jwt_pubkey(pth)
     manifest = json.loads(pth.read_text(encoding="utf-8"))
     LOGGER.debug(f"manifest={manifest}")
@@ -58,7 +58,7 @@ async def test_fakeproduct_manifest() -> None:
 async def test_cryptpad_manifest() -> None:
     """Check cryptpad manifest"""
     config = MWConfig.singleton()
-    pth = next([cand for cand in await create_all_product_manifests() if "/cryptpad/" in str(cand)])
+    pth = [cand for cand in await create_all_product_manifests() if "/cryptpad/" in str(cand)][0]  # noqa: RUF015
     check_jwt_pubkey(pth)
     manifest = json.loads(pth.read_text(encoding="utf-8"))
     LOGGER.debug(f"manifest={manifest}")
