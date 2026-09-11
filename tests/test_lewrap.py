@@ -22,24 +22,12 @@ def check_common_args(args: list[str], config: MWConfig) -> None:
     assert "rasenmaeher" in args
 
 
+@pytest.mark.parametrize("ktype", ["ecdsa", "rsa"])
 @pytest.mark.asyncio
-async def test_default_config() -> None:
-    """Test with default config"""
-    config = MWConfig()  # type: ignore[call-arg]
-    LOGGER.debug(f"config={config}")
-    assert config.ci is True
-    _, args = await call_certbot(config)
-    check_common_args(args, config)
-    assert "--staging" in args
-    assert "--key-type" in args
-    assert "ecdsa" in args
-
-
-@pytest.mark.asyncio
-async def test_rsa_config(monkeypatch: pytest.MonkeyPatch) -> None:
+async def test_env_config(ktype: str, monkeypatch: pytest.MonkeyPatch) -> None:
     """Test with modified config"""
     with monkeypatch.context() as mpatch:
-        mpatch.setenv("MW_KEYTYPE", "rsa")
+        mpatch.setenv("MW_KEYTYPE", ktype)
         config = MWConfig()  # type: ignore[call-arg]
         LOGGER.debug(f"config={config}")
         assert config.ci is True
@@ -47,7 +35,7 @@ async def test_rsa_config(monkeypatch: pytest.MonkeyPatch) -> None:
         check_common_args(args, config)
         assert "--staging" in args
         assert "--key-type" in args
-        assert "rsa" in args
+        assert ktype in args
 
 
 @pytest.mark.asyncio
