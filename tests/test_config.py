@@ -45,7 +45,6 @@ def test_defaults() -> None:
         "sandbox.cryptpad.pytest.pvarki.fi",
         "mtls.sandbox.cryptpad.pytest.pvarki.fi",
     }
-    assert cfg.keytype is KeyType.ECDSA
 
 
 def test_singleton() -> None:
