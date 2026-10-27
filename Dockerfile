@@ -4,7 +4,7 @@
 #############################################
 FROM advian/tox-base:debian-bookworm AS tox
 ARG PYTHON_VERSIONS="3.11"
-ARG UV_VERSION="0.11.6"
+ARG UV_VERSION="0.13.6"
 RUN export RESOLVED_VERSIONS=`pyenv_resolve $PYTHON_VERSIONS` \
     && echo RESOLVED_VERSIONS=$RESOLVED_VERSIONS \
     && for pyver in $RESOLVED_VERSIONS; do pyenv install -s $pyver; done \
@@ -20,7 +20,7 @@ RUN export RESOLVED_VERSIONS=`pyenv_resolve $PYTHON_VERSIONS` \
 # Base builder image #
 ######################
 FROM python:3.14-trixie AS builder_base
-COPY --from=ghcr.io/astral-sh/uv:0.11.6 /uv /uvx /usr/local/bin/
+COPY --from=ghcr.io/astral-sh/uv:0.13.6 /uv /uvx /usr/local/bin/
 
 ENV \
   # locale
